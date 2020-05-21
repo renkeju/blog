@@ -20,18 +20,20 @@
     var CONFIG = {"hostname":"blog.renkeju.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="时光穿梭机">
-<meta property="og:url" content="https://blog.renkeju.com/archives/index.html">
+  <meta name="description" content="创建WAN\LAN区域配置NAT需要有两个网络平面，一个负责WAN，一个负责LAN，先创建网卡的zone分别为External（WAN）和Internal（LAN），下面的示例中ens32负责WAN，ens36负责LAN。 12# nmcli c mod ens32 connection.zone external# nmcli c mod ens36 connection.zone intern">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在 CentOS7 使用 firewalld 配置 NAT">
+<meta property="og:url" content="https://blog.renkeju.com/2020/05/21/firewalld-NAT/index.html">
 <meta property="og:site_name" content="时光穿梭机">
+<meta property="og:description" content="创建WAN\LAN区域配置NAT需要有两个网络平面，一个负责WAN，一个负责LAN，先创建网卡的zone分别为External（WAN）和Internal（LAN），下面的示例中ens32负责WAN，ens36负责LAN。 12# nmcli c mod ens32 connection.zone external# nmcli c mod ens36 connection.zone intern">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-05-21T07:16:21.000Z">
+<meta property="article:modified_time" content="2020-05-21T07:33:06.905Z">
 <meta property="article:author" content="Keju Ren">
-<meta property="article:tag" content="Linux">
-<meta property="article:tag" content="OS">
-<meta property="article:tag" content="Cloud">
+<meta property="article:tag" content="Network">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://blog.renkeju.com/archives/">
+<link rel="canonical" href="https://blog.renkeju.com/2020/05/21/firewalld-NAT/">
 
 
 <script id="page-configurations">
@@ -39,12 +41,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>归档 | 时光穿梭机</title>
+  <title>在 CentOS7 使用 firewalld 配置 NAT | 时光穿梭机</title>
   
     <script>
       function sendPageView() {
@@ -169,236 +171,113 @@
         <div class="content-wrap">
           
 
-          <div class="content archive">
+          <div class="content post posts-expand">
             
 
+    
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <span class="collection-header">嗯..! 目前共计 10 篇日志。 继续努力。</span>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.renkeju.com/2020/05/21/firewalld-NAT/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Keju Ren">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="时光穿梭机">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          在 CentOS7 使用 firewalld 配置 NAT
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-05-21 15:16:21 / 修改时间：15:33:06" itemprop="dateCreated datePublished" datetime="2020-05-21T15:16:21+08:00">2020-05-21</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2020</span>
+        <h2 id="创建WAN-LAN区域"><a href="#创建WAN-LAN区域" class="headerlink" title="创建WAN\LAN区域"></a>创建WAN\LAN区域</h2><p>配置NAT需要有两个网络平面，一个负责WAN，一个负责LAN，先创建网卡的zone分别为External（WAN）和Internal（LAN），下面的示例中ens32负责WAN，ens36负责LAN。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># nmcli c mod ens32 connection.zone external</span><br><span class="line"># nmcli c mod ens36 connection.zone internal</span><br></pre></td></tr></table></figure>
+
+<p>确认一下是否创建成功</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># firewall-cmd --get-active-zone</span><br></pre></td></tr></table></figure>
+
+<p>WAN\LAN配置IP masquerad</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># firewall-cmd --zone&#x3D;external --add-masquerade --permanent</span><br><span class="line"># firewall-cmd --zone&#x3D;internal --add-masquerade --permanent</span><br><span class="line"># firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+
+<p>检查一下ip fordwarding 是否启用，如果启用的话为1</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># cat &#x2F;proc&#x2F;sys&#x2F;net&#x2F;ipv4&#x2F;ip_forward</span><br></pre></td></tr></table></figure>
+
+<p>如果<code>/proc/sys/net/ipv4/ip_forward</code>不为1，执行下面的操作</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># cat &#x2F;etc&#x2F;sysctl.d&#x2F;99-sysctl.conf </span><br><span class="line"></span><br><span class="line">net.ipv4&#x2F;ip_forward &#x3D; 1</span><br><span class="line"></span><br><span class="line"># sysctl --system</span><br></pre></td></tr></table></figure>
+
+<h2 id="开放端口"><a href="#开放端口" class="headerlink" title="开放端口"></a>开放端口</h2><p>因为修改了网卡的区域，之前在 public 区域生效的防火墙规则已经失效，所以需要对需要对WAN/LAN开放的端口进行配置。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># firewall-cmd --add-service&#x3D;http --zone&#x3D;external --permanent</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>–add-service 指定服务</li>
+<li>–zone 指定区域</li>
+<li>–permanent 将规则添加到持久规则集</li>
+</ul>
+<p>当所有服务都定义完成后，可以使用如下命令重新加载 FirewallD。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+
+<h2 id="检查"><a href="#检查" class="headerlink" title="检查"></a>检查</h2><p>查看已经配置完成的区域</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># firewall-cmd --zone&#x3D;external --list-all</span><br></pre></td></tr></table></figure>
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+    
+    
+    
 
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-05-21T15:16:21+08:00"
-              content="2020-05-21">
-          05-21
-        </time>
-      </div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Network/" rel="tag"># Network</a>
+          </div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/05/21/firewalld-NAT/" itemprop="url">
-            <span itemprop="name">在 CentOS7 使用 firewalld 配置 NAT</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-05-11T14:44:00+08:00"
-              content="2020-05-11">
-          05-11
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/05/11/cobbler/" itemprop="url">
-            <span itemprop="name">cobbler 部署与实践</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-05-11T14:44:00+08:00"
-              content="2020-05-11">
-          05-11
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/05/11/Build_a_simple_container_image/" itemprop="url">
-            <span itemprop="name">构建一个简单的容器镜像</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-05-11T14:43:59+08:00"
-              content="2020-05-11">
-          05-11
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/05/11/Brief_description_of_the_configuration_file/" itemprop="url">
-            <span itemprop="name">配置文件的简单说明</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-05-11T14:43:59+08:00"
-              content="2020-05-11">
-          05-11
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/05/11/SNMP_Exporter_config_generate/" itemprop="url">
-            <span itemprop="name">SNMP Exporter 配置生成器</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-05-11T14:43:59+08:00"
-              content="2020-05-11">
-          05-11
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/05/11/Quickly_build_a_monitoring_system_test_environment/" itemprop="url">
-            <span itemprop="name">快速构建监控系统测试环境</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-05-11T14:43:59+08:00"
-              content="2020-05-11">
-          05-11
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/05/11/Prometheus_SNMP_Exporter/" itemprop="url">
-            <span itemprop="name">Prometheus SNMP Exporter</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-05-11T14:43:59+08:00"
-              content="2020-05-11">
-          05-11
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/05/11/private_airport/" itemprop="url">
-            <span itemprop="name">个人小机场</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-05-11T14:43:59+08:00"
-              content="2020-05-11">
-          05-11
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/05/11/network_device_monitor/" itemprop="url">
-            <span itemprop="name">网络设备监控系统</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-05-11T14:43:59+08:00"
-              content="2020-05-11">
-          05-11
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/05/11/kubeedge/" itemprop="url">
-            <span itemprop="name">KubeEdge 部署</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
+        
 
 
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/05/11/cobbler/" rel="prev" title="cobbler 部署与实践">
+      <i class="fa fa-chevron-left"></i> cobbler 部署与实践
+    </a></div>
+      <div class="post-nav-item"></div>
     </div>
-  </div>
+      </footer>
+    
+  </article>
   
   
-  
-
   
 
 
 
           </div>
           
+    <div class="comments" id="gitalk-container"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -445,6 +324,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建WAN-LAN区域"><span class="nav-number">1.</span> <span class="nav-text">创建WAN\LAN区域</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开放端口"><span class="nav-number">2.</span> <span class="nav-text">开放端口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#检查"><span class="nav-number">3.</span> <span class="nav-text">检查</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -568,6 +448,25 @@
 
   
 
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'b14f24bd0e120e773342',
+      clientSecret: '6a29acce8d8060cae5d7e0eef0cf0cc89b762d8b',
+      repo        : 'blog',
+      owner       : 'renkeju',
+      admin       : ['renkeju'],
+      id          : '6ed2f57ea3ca236dfe437514a5dbc289',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
 
 </body>
 </html>
