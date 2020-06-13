@@ -175,6 +175,156 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.renkeju.com/2020/06/13/facileManager/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Keju Ren">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="时光穿梭机">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/06/13/facileManager/" class="post-title-link" itemprop="url">facileManager</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-06-13 18:19:17 / 修改时间：19:40:43" itemprop="dateCreated datePublished" datetime="2020-06-13T18:19:17+08:00">2020-06-13</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="安装-facileManager"><a href="#安装-facileManager" class="headerlink" title="安装 facileManager"></a>安装 facileManager</h2><ol>
+<li><p>从github克隆facileManager的ansible安装脚本</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;renkeju&#x2F;ansible-facilemanager.git</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建 inventory 中目录与文件</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">cd ansible-facilemanager</span><br><span class="line">mkdir inventory&#x2F;host_vars</span><br><span class="line">touch inventory&#x2F;host_vars&#x2F;fm.yml</span><br><span class="line"></span><br><span class="line">ansible_ssh_host: 192.168.0.2</span><br><span class="line">ansible_ssh_port: 22</span><br><span class="line">ansible_ssh_user: firefly</span><br><span class="line">ansible_ssh_pass: firefly</span><br><span class="line">ansible_sudo_pass: firefly</span><br><span class="line">ansible_become_user: root</span><br><span class="line">ansible_become_pass: firefly</span><br><span class="line">ansible_python_interpreter: &#x2F;usr&#x2F;bin&#x2F;python3.6</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<blockquote>
+<p>修改 fm.yml 的配置信息，可以参考<a href="http://www.ansible.com.cn/docs/intro_inventory.html#behavioral-parameters" target="_blank" rel="noopener">《Ansible 权威指南》Inventory参数的说明</a></p>
+</blockquote>
+<ol start="3">
+<li><p>修改 <code>inventory/group_vars/all.yml</code> 配置文件。</p>
+<p> 下面这两个参数是需要关注的。</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">apache_listen_interface: eth0</span><br><span class="line">php_packages_state: []</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>开始安装</p>
+<p> 现在配置完成了，可以执行ansible剧本。</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ansible -i inventory&#x2F;hosts.ini fm -m ping</span><br><span class="line">ansible-playbook -i inventory&#x2F;hosts.ini main.yml</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h2 id="配置web界面"><a href="#配置web界面" class="headerlink" title="配置web界面"></a>配置web界面</h2><p>打开浏览器输入 http://<ip_address> 并按照下面实例进行操作。</p>
+<ol>
+<li><p>提供数据库密码并提交</p>
+<p> 数据库主机：localhost<br> 数据库名称：facileManager<br> 数据库用户名：facileManager<br> 数据库密码：facileManagerPassword!</p>
+<p> <img src="/images/facilemanager/fmdns-01.png" alt="数据库安装"></p>
+</li>
+<li><p>点击 <code>continue</code> 按钮创建数据库 schema。</p>
+<p> <img src="/images/facilemanager/fmdns-02.png" alt="schema"></p>
+</li>
+<li><p>检查PHP依赖，所有检测通过后，点击continue。</p>
+<p> <img src="/images/facilemanager/fmdns-03.png" alt="检查依赖"></p>
+</li>
+<li><p>创建管理员用户并未管理员用户提供密码，然后点击 continue。</p>
+<p> <img src="/images/facilemanager/fmdns-04.png" alt="创建管理员"></p>
+</li>
+<li><p>到这一步就完成了，点击按钮 Next。</p>
+<p> <img src="/images/facilemanager/fmdns-05.png" alt="完成"></p>
+</li>
+<li><p>输入用户名和密码登录。</p>
+<p> <img src="/images/facilemanager/fmdns-06.png" alt="登录"></p>
+</li>
+<li><p>在配置模块部分激活 fmDNS 与 fmDHCP 模块。</p>
+<p> <img src="/images/facilemanager/fmdns-07.png" alt="激活模块"></p>
+</li>
+<li><p>模块激活成功。</p>
+<p> <img src="/images/facilemanager/fmdns-08.png" alt="模块激活成功"></p>
+</li>
+<li><p>fmDNS已成功加载。点击右上角切换到 fmDNS 模块。</p>
+<p> <img src="/images/facilemanager/fmdns-09.png" alt="切换到 fmDNS 模块"></p>
+</li>
+</ol>
+<h2 id="安装-fmDNS-客户端"><a href="#安装-fmDNS-客户端" class="headerlink" title="安装 fmDNS 客户端"></a>安装 fmDNS 客户端</h2><p>登录主机终端，切换到<code>/usr/local/facileManager/fmDNS</code>中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">cd &#x2F;usr&#x2F;local&#x2F;facileManager&#x2F;fmDNS</span><br><span class="line">php client.php install</span><br><span class="line"></span><br><span class="line">Welcome to the fmDNS installer.</span><br><span class="line"></span><br><span class="line">Please answer the following questions and the necessary configurations will be performed for you.</span><br><span class="line"></span><br><span class="line">Please enter the location of the facileManager interface:</span><br><span class="line">    Examples include:</span><br><span class="line">        fm.mydomain.com</span><br><span class="line">        fm.mydomain.com:8443</span><br><span class="line">        mydomain.com&#x2F;fm</span><br><span class="line">        http:&#x2F;&#x2F;fm.mydomain.com&#x2F;facileManager</span><br><span class="line"></span><br><span class="line">Please enter the location of the facileManager interface: controller.k3s.lan&#x2F;</span><br><span class="line">  --&gt; Testing controller.k3s.lan via https...failed</span><br><span class="line">  --&gt; Testing controller.k3s.lan via http...ok</span><br><span class="line">  --&gt; Checking account details...Success</span><br><span class="line"></span><br><span class="line">Please enter the serial number for controller.k3s.lan (or leave blank to create new): 213688597</span><br><span class="line">  --&gt; Adding controller.k3s.lan to the database...Success</span><br><span class="line">  --&gt; Running version tests...ok</span><br><span class="line"></span><br><span class="line">  --&gt; Tests complete.  Continuing installation.</span><br><span class="line"></span><br><span class="line">Will controller.k3s.lan get updates via cron, ssh, or http(s) [c|s|h]? h</span><br><span class="line"></span><br><span class="line">Cannot find DocumentRoot in apache2.conf.  Please enter the full path of your default DocumentRoot (&#x2F;var&#x2F;www&#x2F;html): &#x2F;var&#x2F;www&#x2F;html&#x2F;facilemanager</span><br><span class="line">  --&gt; Creating &#x2F;var&#x2F;www&#x2F;html&#x2F;facilemanager&#x2F;fM link.</span><br><span class="line">      --&gt; &#x2F;var&#x2F;www&#x2F;html&#x2F;facilemanager&#x2F;fM already exists...skipping</span><br><span class="line">  --&gt; Detected apache2 runs as &#39;www-data&#39;</span><br><span class="line">  --&gt; The sudoers entry already exists...skipping</span><br><span class="line"></span><br><span class="line">Configuration file has been saved.</span><br><span class="line"></span><br><span class="line">Installation is complete. Please login to the UI to ensure the server settings are correct.</span><br></pre></td></tr></table></figure>
+
+<p>如果没有报错，我们在UI中添加服务器。点击 config -&gt; Servers，如下图：</p>
+<p><img src="/images/facilemanager/fmdns-10.png" alt="添加服务器"></p>
+<p>单击”Enable”按钮启用服务器：</p>
+<p><img src="/images/facilemanager/fmdns-11.png" alt="启用服务器"></p>
+<p>完成后，UI 右上角需要手动确认更新提交。您的UI界面可以与您的服务器进行通信，并在Web UI中配置您的域并在您的服务器中自动更新。</p>
+<h2 id="创建-SOA-模板"><a href="#创建-SOA-模板" class="headerlink" title="创建 SOA 模板"></a>创建 SOA 模板</h2><ol>
+<li><p>创建 Forware 使用的 SOA 模板 loaclhost</p>
+<p> <img src="/images/facilemanager/SOA_template-01.png" alt="localhost SOA template"></p>
+</li>
+<li><p>创建 Reveres 使用的 SOA 模板 arpa-ipv6</p>
+<p> <img src="/images/facilemanager/SOA_template-02.png" alt="arpa-ipv6 SOA template"></p>
+</li>
+<li><p>创建 Reveres 使用的 SOA 模板 arpa</p>
+<p> <img src="/images/facilemanager/SOA_template-03.png" alt="arpa SOA template"></p>
+</li>
+</ol>
+<h2 id="创建-Zone-模板"><a href="#创建-Zone-模板" class="headerlink" title="创建 Zone 模板"></a>创建 Zone 模板</h2><ol>
+<li><p>添加Zone模板并不生效，也可以跳过这一步。</p>
+<p> <img src="/images/facilemanager/Zone_Templates.png" alt="添加 Zone 模板"></p>
+</li>
+<li><p>在模板中添加A记录，Record 所在列是记录，Value为值。</p>
+<p> <img src="/images/facilemanager/add_NS.png" alt="在模板中添加A记录"></p>
+</li>
+<li><p>在模板中添加NS记录，NS记录为必须存在的。</p>
+<p> <img src="/images/facilemanager/select_SOA.png" alt="在模板中添加NS记录"></p>
+</li>
+<li><p>选择SOA模板，这些SOA模板就是刚刚创建的。</p>
+<p> ![在模板中选择SOA模板][19]</p>
+</li>
+</ol>
+<h2 id="添加正向解析"><a href="#添加正向解析" class="headerlink" title="添加正向解析"></a>添加正向解析</h2><ol>
+<li><p>编辑正向解析区域</p>
+<p> ![][20]</p>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://blog.renkeju.com/2020/05/21/firewalld-NAT/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1055,200 +1205,11 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://blog.renkeju.com/2020/05/11/kubeedge/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.png">
-      <meta itemprop="name" content="Keju Ren">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="时光穿梭机">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/05/11/kubeedge/" class="post-title-link" itemprop="url">KubeEdge 部署</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-05-11 14:43:59" itemprop="dateCreated datePublished" datetime="2020-05-11T14:43:59+08:00">2020-05-11</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%BE%B9%E7%BC%98%E8%AE%A1%E7%AE%97/" itemprop="url" rel="index"><span itemprop="name">边缘计算</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="环境说明"><a href="#环境说明" class="headerlink" title="环境说明"></a>环境说明</h2><ul>
-<li>CentOS 7.x</li>
-<li>kubernetes 1.14.x</li>
-<li>docker 18.9.x</li>
-<li>kubeedge release 1.1.0</li>
-</ul>
-<h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>KubeEdge由云和边缘部分组成。它基于Kubernetes构建，并为云、边缘之间联网，应用程序部署以及元数据同步提供核心基础架构支持。因此，如果要设置KubeEdge，则需要设置kubernetes集群，云端和边缘端。</p>
-<ul>
-<li>在云端，我们需要安装docker、kubernetes集群和cloudcore</li>
-<li>在边缘端，我们需要安装docker、mqtt和edgecore</li>
-</ul>
-<h2 id="先决条件"><a href="#先决条件" class="headerlink" title="先决条件"></a>先决条件</h2><ul>
-<li>在云端和边缘端安装docker</li>
-<li>在云端安装kubeadm、kubectl</li>
-<li>在云端通过kubeadm创建kubernetes集群</li>
-<li>在边缘段安装 mosquitto</li>
-</ul>
-<h2 id="运行-KubeEdge"><a href="#运行-KubeEdge" class="headerlink" title="运行 KubeEdge"></a>运行 KubeEdge</h2><h3 id="设置云端"><a href="#设置云端" class="headerlink" title="设置云端"></a>设置云端</h3><h4 id="下载-KubeEdge"><a href="#下载-KubeEdge" class="headerlink" title="下载 KubeEdge"></a>下载 KubeEdge</h4><p>当kubernetst基础创建完成之后，下载<a href="https://github.com/kubeedge/kubeedge/releases" target="_blank" rel="noopener">kubeedge</a>与<a href="https://raw.githubusercontent.com/kubeedge/kubeedge/release-1.1/build/tools/certgen.sh" target="_blank" rel="noopener">证书生成脚本</a>到本地，并上传master节点。</p>
-<h4 id="生成证书"><a href="#生成证书" class="headerlink" title="生成证书"></a>生成证书</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash &#x2F;path&#x2F;to&#x2F;certgen.sh genCertAndKey edge</span><br></pre></td></tr></table></figure>
-
-<p>生成证书/密钥将分别在<code>/etc/kubeedge/ca</code>和<code>/etc/kubeedge/certs</code>中，因此此命令应以root用户或有权访问这些目录的用户运行。我们需要将这些文件复制到相应的边缘服务器目录<code>/etc/kubeedge</code>。</p>
-<h4 id="运行-cloudcore"><a href="#运行-cloudcore" class="headerlink" title="运行 cloudcore"></a>运行 cloudcore</h4><ol>
-<li><p>运行前在kubernetes中创建设备型号和设备CRD，下载<a href="https://raw.githubusercontent.com/kubeedge/kubeedge/release-1.1/build/crds/devices/devices_v1alpha1_device.yaml" target="_blank" rel="noopener">devices_v1alpha1_device.yaml</a>、<a href="https://raw.githubusercontent.com/kubeedge/kubeedge/release-1.1/build/crds/devices/devices_v1alpha1_devicemodel.yaml" target="_blank" rel="noopener">devices_v1alpha1_devicemodel.yaml</a>文件</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubectl create -f devices_v1alpha1_devicemodel.yaml</span><br><span class="line">kubectl create -f devices_v1alpha1_device.yaml</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>解压kubeedge压缩包到<code>/opt</code></p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">tar xfv kubeedge-v1.1.0-linux-amd64.tar.gz -C &#x2F;opt</span><br><span class="line">kubeedge-v1.1.0-linux-amd64&#x2F;</span><br><span class="line">kubeedge-v1.1.0-linux-amd64&#x2F;edge&#x2F;</span><br><span class="line">kubeedge-v1.1.0-linux-amd64&#x2F;edge&#x2F;conf&#x2F;</span><br><span class="line">kubeedge-v1.1.0-linux-amd64&#x2F;edge&#x2F;conf&#x2F;edge.yaml</span><br><span class="line">kubeedge-v1.1.0-linux-amd64&#x2F;edge&#x2F;conf&#x2F;modules.yaml</span><br><span class="line">kubeedge-v1.1.0-linux-amd64&#x2F;edge&#x2F;conf&#x2F;logging.yaml</span><br><span class="line">kubeedge-v1.1.0-linux-amd64&#x2F;edge&#x2F;edgecore</span><br><span class="line">kubeedge-v1.1.0-linux-amd64&#x2F;cloud&#x2F;</span><br><span class="line">kubeedge-v1.1.0-linux-amd64&#x2F;cloud&#x2F;csidriver&#x2F;</span><br><span class="line">kubeedge-v1.1.0-linux-amd64&#x2F;cloud&#x2F;csidriver&#x2F;csidriver</span><br><span class="line">kubeedge-v1.1.0-linux-amd64&#x2F;cloud&#x2F;admission&#x2F;</span><br><span class="line">kubeedge-v1.1.0-linux-amd64&#x2F;cloud&#x2F;admission&#x2F;admission</span><br><span class="line">kubeedge-v1.1.0-linux-amd64&#x2F;cloud&#x2F;cloudcore&#x2F;</span><br><span class="line">kubeedge-v1.1.0-linux-amd64&#x2F;cloud&#x2F;cloudcore&#x2F;conf&#x2F;</span><br><span class="line">kubeedge-v1.1.0-linux-amd64&#x2F;cloud&#x2F;cloudcore&#x2F;conf&#x2F;controller.yaml</span><br><span class="line">kubeedge-v1.1.0-linux-amd64&#x2F;cloud&#x2F;cloudcore&#x2F;conf&#x2F;modules.yaml</span><br><span class="line">kubeedge-v1.1.0-linux-amd64&#x2F;cloud&#x2F;cloudcore&#x2F;conf&#x2F;logging.yaml</span><br><span class="line">kubeedge-v1.1.0-linux-amd64&#x2F;cloud&#x2F;cloudcore&#x2F;cloudcore</span><br><span class="line">kubeedge-v1.1.0-linux-amd64&#x2F;version</span><br><span class="line">ln -s kubeedge-v1.1.0-linux-amd64 kubeedge</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>设置cloudcore配置文件</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd &#x2F;opt&#x2F;kubeedge&#x2F;cloud&#x2F;cloudcore&#x2F;conf&#x2F;</span><br><span class="line">vim controller.yaml</span><br></pre></td></tr></table></figure>
-
-<p> 在运行cloudcore之前验证配置</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">controller:</span><br><span class="line">kube:</span><br><span class="line">  master:     # kube-apiserver address (such as:http:&#x2F;&#x2F;localhost:8080)</span><br><span class="line">  namespace: &quot;&quot;</span><br><span class="line">  content_type: &quot;application&#x2F;vnd.kubernetes.protobuf&quot;</span><br><span class="line">  qps: 5</span><br><span class="line">  burst: 10</span><br><span class="line">  node_update_frequency: 10</span><br><span class="line">  kubeconfig: &quot;~&#x2F;.kube&#x2F;config&quot;   #Enter path to kubeconfig file to enable https connection to k8s apiserver, if master and kubeconfig are both set, master will override any value in kubeconfig.</span><br><span class="line">cloudhub:</span><br><span class="line">  protocol_websocket: true # enable websocket protocol</span><br><span class="line">  port: 10000 # open port for websocket server</span><br><span class="line">  protocol_quic: true # enable quic protocol</span><br><span class="line">  quic_port: 10001 # open prot for quic server</span><br><span class="line">  max_incomingstreams: 10000 # the max incoming stream for quic server</span><br><span class="line">  enable_uds: true # enable unix domain socket protocol</span><br><span class="line">  uds_address: unix:&#x2F;&#x2F;&#x2F;var&#x2F;lib&#x2F;kubeedge&#x2F;kubeedge.sock # unix domain socket address</span><br><span class="line">  address: 0.0.0.0</span><br><span class="line">  ca: &#x2F;etc&#x2F;kubeedge&#x2F;ca&#x2F;rootCA.crt</span><br><span class="line">  cert: &#x2F;etc&#x2F;kubeedge&#x2F;certs&#x2F;edge.crt</span><br><span class="line">  key: &#x2F;etc&#x2F;kubeedge&#x2F;certs&#x2F;edge.key</span><br><span class="line">  keepalive-interval: 30</span><br><span class="line">  write-timeout: 30</span><br><span class="line">  node-limit: 10</span><br><span class="line">devicecontroller:</span><br><span class="line">  kube:</span><br><span class="line">    master:        # kube-apiserver address (such as:http:&#x2F;&#x2F;localhost:8080)</span><br><span class="line">    namespace: &quot;&quot;</span><br><span class="line">    content_type: &quot;application&#x2F;vnd.kubernetes.protobuf&quot;</span><br><span class="line">    qps: 5</span><br><span class="line">    burst: 10</span><br><span class="line">    kubeconfig: &quot;~&#x2F;.kube&#x2F;config&quot; #Enter path to kubeconfig file to enable https connection to k8s apiserver,if master and kubeconfig are both set, master will override any value in kubeconfig.</span><br></pre></td></tr></table></figure>
-
-<p> cloudcore默认支持与Kubernetes apiserver的https连接，因此您需要检查<code>controller.kube.kubeconfig</code>和<code>devicecontroller.kube.kubeconfig</code>的路径是否存在，但是如果同时设置<code>master</code>和<code>kubeconfig</code>，则<code>master</code>将覆盖<code>kubeconfig</code>中的任何值。检查<code>cloudhub.ca</code>，<code>cloudhub.cert</code>，<code>cloudhub.key</code>的证书文件是否存在。</p>
-</li>
-<li><p>通过systemd运行cloudcore</p>
-<p> 使用systemd启动cloudcore。如果需要，可以使用示例systemd-unit-file。</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">cat &lt;&lt; EOF &gt; &#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;kubeedge-cloud.service</span><br><span class="line">[Unit]</span><br><span class="line">Description&#x3D;https:&#x2F;&#x2F;kubeedge.io&#x2F;</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">WorkingDirectory&#x3D;&#x2F;opt&#x2F;kubeedge&#x2F;cloud&#x2F;cloudcore</span><br><span class="line">ExecStart&#x3D;&#x2F;opt&#x2F;kubeedge&#x2F;cloud&#x2F;cloudcore&#x2F;cloudcore</span><br><span class="line">Restart&#x3D;always</span><br><span class="line">StartLimitInterval&#x3D;0</span><br><span class="line">RestartSec&#x3D;10</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy&#x3D;multi-user.target</span><br><span class="line">EOF</span><br><span class="line">systemctl daemon-reload</span><br><span class="line">systemctl start kubeedge-cloud</span><br><span class="line">systemctl enable kubeedge-cloud</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>检查端口</p>
-<p>启动后检查端口号，确认 10000 与 10001 端口存在。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">netstat -tulnp | grep cloudcore</span><br><span class="line">tcp6       0      0 :::10000                :::*                    LISTEN      17462&#x2F;cloudcore     </span><br><span class="line">udp6       0      0 :::10001                :::*                                17462&#x2F;cloudcore</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<h4 id="部署边缘节点"><a href="#部署边缘节点" class="headerlink" title="部署边缘节点"></a>部署边缘节点</h4><p>我们提供了一个示例node.json来在kubernetes中添加一个节点。请确保在Kubernetes中添加了Edge节点。运行以下步骤以添加边缘节点。</p>
-<ul>
-<li><p>下载 <a href="https://raw.githubusercontent.com/kubeedge/kubeedge/release-1.1/build/node.json" target="_blank" rel="noopener">node.js</a> 文件并在文件中的修改边缘节点<code>metadata.name</code>的名称。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;kubeedge&#x2F;kubeedge&#x2F;release-1.1&#x2F;build&#x2F;node.json</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>确保该节点的设置为边缘角色。因此在<code>metadata</code>中的<code>labels</code>标签必须有<code>&quot;node-role.kubernetes.io/edge&quot;</code>这个关键字。</p>
-</li>
-<li><p>请确保在<code>node.json</code>文件中添加了标签<code>node-role.kubernetes.io/edge</code>。</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"kind"</span>: <span class="string">"Node"</span>,</span><br><span class="line">  <span class="attr">"apiVersion"</span>: <span class="string">"v1"</span>,</span><br><span class="line">  <span class="attr">"metadata"</span>: &#123;</span><br><span class="line">    <span class="attr">"name"</span>: <span class="string">"edge-node"</span>,</span><br><span class="line">    <span class="attr">"labels"</span>: &#123;</span><br><span class="line">      <span class="attr">"name"</span>: <span class="string">"edge-node"</span>,</span><br><span class="line">      <span class="attr">"node-role.kubernetes.io/edge"</span>: <span class="string">""</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>注意：你需要记录下 <code>metadata.name</code>，因为 edgecore 需要它。</p>
-</blockquote>
-</li>
-<li><p>如果没有为节点设置角色，则pod，configmap和secrets无法在云中创建、更新，并与它们所对应的节点同步。</p>
-</li>
-<li><p>部署边缘节点（您必须在云端运行）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f node.json</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>将证书文件传输到边缘节点，因为 edgecore 需要使用这些证书文件来连接 cloudcore。</p>
-</li>
-<li><p>在云端将已经生成的证书打包并上到边缘节点。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd &#x2F;etc</span><br><span class="line">tar zcf kubeedge.tgz &#x2F;etc&#x2F;kubeedge</span><br><span class="line">scp kubeedge.tgz &lt;username&gt;@&lt;ip&gt;:&#x2F;etc</span><br></pre></td></tr></table></figure>
-
-
-</li>
-</ul>
-<h3 id="设置边缘端"><a href="#设置边缘端" class="headerlink" title="设置边缘端"></a>设置边缘端</h3><h4 id="下载-EdgeSide"><a href="#下载-EdgeSide" class="headerlink" title="下载 EdgeSide"></a>下载 EdgeSide</h4><p>先将刚才上传的压缩包<code>kubeedge.tgz</code>解压</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd &#x2F;etc</span><br><span class="line">tar xf kubeedge.tgz</span><br></pre></td></tr></table></figure>
-
-<p>边缘节点和云端部署使用的二进制文件相同，都是<code>kubeedge-v1.1.0-linux-amd64.tar.gz</code>。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget -P &#x2F;tmp https:&#x2F;&#x2F;github.com&#x2F;kubeedge&#x2F;kubeedge&#x2F;releases&#x2F;download&#x2F;v1.1.0&#x2F;kubeedge-v1.1.0-linux-amd64.tar.gz </span><br><span class="line">tar xf &#x2F;tmp&#x2F;kubeedge-v1.1.0-linux-amd64.tar.gz -C &#x2F;opt&#x2F;</span><br><span class="line">ln -s &#x2F;opt&#x2F;kubeedge-v1.1.0-linux-amd64 &#x2F;opt&#x2F;kubeedge</span><br></pre></td></tr></table></figure>
-
-<h4 id="安装Mosquitto"><a href="#安装Mosquitto" class="headerlink" title="安装Mosquitto"></a>安装Mosquitto</h4><p>安装 Mosquitto 为 kubeedge edgesite 提供消息队列遥测传输服务。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">yum -y install epel-release</span><br><span class="line">yum -y install mosquitto</span><br><span class="line">systemctl start mosquitto</span><br><span class="line">systemctl enable mosquitto</span><br></pre></td></tr></table></figure>
-
-<p>启动后检查端口</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">netstat -tulnp | grep mosquitto</span><br><span class="line">tcp        0      0 127.0.0.1:1883          0.0.0.0:*               LISTEN      31482&#x2F;mosquitto</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>这里我对Mosquitto配置文件<code>/etc/mosquitto/mosquitto.conf</code>中的<code>bind_addr</code>作了更改，更改为<code>127.0.0.1</code>,其默认为<code>0.0.0.0</code>。</p>
-</blockquote>
-<h4 id="运行-edgesite"><a href="#运行-edgesite" class="headerlink" title="运行 edgesite"></a>运行 edgesite</h4><p>在运行edgecore之前验证配置</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">mqtt:</span></span><br><span class="line">    <span class="attr">server:</span> <span class="string">tcp://127.0.0.1:1883</span> <span class="comment"># external mqtt broker url.</span></span><br><span class="line">    <span class="attr">internal-server:</span> <span class="string">tcp://127.0.0.1:1884</span> <span class="comment"># internal mqtt broker url.</span></span><br><span class="line">    <span class="attr">mode:</span> <span class="number">0</span> <span class="comment"># 0: internal mqtt broker enable only. 1: internal and external mqtt broker enable. 2: external mqtt broker enable only.</span></span><br><span class="line">    <span class="attr">qos:</span> <span class="number">0</span> <span class="comment"># 0: QOSAtMostOnce, 1: QOSAtLeastOnce, 2: QOSExactlyOnce.</span></span><br><span class="line">    <span class="attr">retain:</span> <span class="literal">false</span> <span class="comment"># if the flag set true, server will store the message and can be delivered to future subscribers.</span></span><br><span class="line">    <span class="attr">session-queue-size:</span> <span class="number">100</span> <span class="comment"># A size of how many sessions will be handled. default to 100.</span></span><br><span class="line"></span><br><span class="line"><span class="attr">edgehub:</span></span><br><span class="line">    <span class="attr">websocket:</span></span><br><span class="line">        <span class="attr">url:</span> <span class="string">wss://0.0.0.0:10000/e632aba927ea4ac2b575ec1603d56f10/fb4ebb70-2783-42b8-b3ef-63e2fd6d242e/events</span></span><br><span class="line">        <span class="attr">certfile:</span> <span class="string">/etc/kubeedge/certs/edge.crt</span></span><br><span class="line">        <span class="attr">keyfile:</span> <span class="string">/etc/kubeedge/certs/edge.key</span></span><br><span class="line">        <span class="attr">handshake-timeout:</span> <span class="number">30</span> <span class="comment">#second</span></span><br><span class="line">        <span class="attr">write-deadline:</span> <span class="number">15</span> <span class="comment"># second</span></span><br><span class="line">        <span class="attr">read-deadline:</span> <span class="number">15</span> <span class="comment"># second</span></span><br><span class="line">    <span class="attr">quic:</span></span><br><span class="line">        <span class="attr">url:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span><span class="string">:10001</span></span><br><span class="line">        <span class="attr">cafile:</span> <span class="string">/etc/kubeedge/ca/rootCA.crt</span></span><br><span class="line">        <span class="attr">certfile:</span> <span class="string">/etc/kubeedge/certs/edge.crt</span></span><br><span class="line">        <span class="attr">keyfile:</span> <span class="string">/etc/kubeedge/certs/edge.key</span></span><br><span class="line">        <span class="attr">handshake-timeout:</span> <span class="number">30</span> <span class="comment">#second</span></span><br><span class="line">        <span class="attr">write-deadline:</span> <span class="number">15</span> <span class="comment"># second</span></span><br><span class="line">        <span class="attr">read-deadline:</span> <span class="number">15</span> <span class="comment"># second</span></span><br><span class="line">    <span class="attr">controller:</span></span><br><span class="line">        <span class="attr">protocol:</span> <span class="string">websocket</span> <span class="comment"># websocket, quic</span></span><br><span class="line">        <span class="attr">heartbeat:</span> <span class="number">15</span>  <span class="comment"># second</span></span><br><span class="line">        <span class="attr">project-id:</span> <span class="string">e632aba927ea4ac2b575ec1603d56f10</span></span><br><span class="line">        <span class="attr">node-id:</span> <span class="string">fb4ebb70-2783-42b8-b3ef-63e2fd6d242e</span></span><br><span class="line"></span><br><span class="line"><span class="attr">edged:</span></span><br><span class="line">    <span class="attr">register-node-namespace:</span> <span class="string">default</span></span><br><span class="line">    <span class="attr">hostname-override:</span> <span class="string">fb4ebb70-2783-42b8-b3ef-63e2fd6d242e</span></span><br><span class="line">    <span class="attr">interface-name:</span> <span class="string">eth0</span></span><br><span class="line">    <span class="attr">edged-memory-capacity-bytes:</span> <span class="number">7852396000</span></span><br><span class="line">    <span class="attr">node-status-update-frequency:</span> <span class="number">10</span> <span class="comment"># second</span></span><br><span class="line">    <span class="attr">device-plugin-enabled:</span> <span class="literal">false</span></span><br><span class="line">    <span class="attr">gpu-plugin-enabled:</span> <span class="literal">false</span></span><br><span class="line">    <span class="attr">image-gc-high-threshold:</span> <span class="number">80</span> <span class="comment"># percent</span></span><br><span class="line">    <span class="attr">image-gc-low-threshold:</span> <span class="number">40</span> <span class="comment"># percent</span></span><br><span class="line">    <span class="attr">maximum-dead-containers-per-container:</span> <span class="number">1</span></span><br><span class="line">    <span class="attr">docker-address:</span> <span class="string">unix:///var/run/docker.sock</span></span><br><span class="line">    <span class="attr">runtime-type:</span> <span class="string">docker</span></span><br><span class="line">    <span class="attr">remote-runtime-endpoint:</span> <span class="string">unix:///var/run/dockershim.sock</span></span><br><span class="line">    <span class="attr">remote-image-endpoint:</span> <span class="string">unix:///var/run/dockershim.sock</span></span><br><span class="line">    <span class="attr">runtime-request-timeout:</span> <span class="number">2</span></span><br><span class="line">    <span class="attr">podsandbox-image:</span> <span class="string">kubeedge/pause:3.1</span> <span class="comment"># kubeedge/pause:3.1 for x86 arch , kubeedge/pause-arm:3.1 for arm arch, kubeedge/pause-arm64 for arm64 arch</span></span><br><span class="line">    <span class="attr">image-pull-progress-deadline:</span> <span class="number">60</span> <span class="comment"># second</span></span><br><span class="line">    <span class="attr">cgroup-driver:</span> <span class="string">cgroupfs</span></span><br><span class="line">    <span class="attr">node-ip:</span> <span class="string">""</span></span><br><span class="line">    <span class="attr">cluster-dns:</span> <span class="string">""</span></span><br><span class="line">    <span class="attr">cluster-domain:</span> <span class="string">""</span></span><br><span class="line"></span><br><span class="line"><span class="attr">mesh:</span></span><br><span class="line">    <span class="attr">loadbalance:</span></span><br><span class="line">        <span class="attr">strategy-name:</span> <span class="string">RoundRobin</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>如果您已经在边缘端主机上运行了mosquitto，请设置<code>mqtt.mode</code>为”2”。</li>
-<li>如果是以双mqtt模式或外部模式（将mqtt.mode设置为1）使用KubeEdge，需要确保在边缘节点上以MQTT Broker形式安装了mosquitto或emqx edge。</li>
-<li>检查<code>edgehub.websocket.certfile</code>和<code>edgehub.websocket.keyfile</code>的证书文件是否存在。</li>
-<li>检查<code>edgehub.quic.certfile</code>，<code>edgehub.quic.keyfile</code>和<code>edgehub.quic.cafile</code>的证书文件是否存在。如果这些文件不存在，则需要从云端复制它们。</li>
-<li>检查<code>edged.podsandbox-image</code><ul>
-<li><code>kubeedge/pause-arm:3.1</code>是ARM架构</li>
-<li><code>kubeedge/pause-arm64:3.1</code>是ARM64架构</li>
-<li><code>kubeedge/pause:3.1</code>是x86架构</li>
-</ul>
-</li>
-<li>在<code>edgehub.websocket.url</code>字段中更新主服务器的IP地址。您需要设置cloudcore IP地址。</li>
-<li>如果您使用quic协议，请在<code>edgehub.quic.url</code>字段中更新主服务器的IP地址。您需要设置cloudcore IP地址。</li>
-<li>在以下字段中，用<code>edge.yaml</code>中的边缘节点名称替换<code>edge-node</code>：<ul>
-<li><code>websocket:URL</code></li>
-<li><code>controller:node-id</code></li>
-<li><code>edged:hostname-override</code></li>
-</ul>
-</li>
-</ul>
-<p>使用 systemctl 运行 edgesite</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">cat &lt;&lt; EOF &gt; &#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;kubeedge-edge.service</span><br><span class="line">[Unit]</span><br><span class="line">Description&#x3D;https:&#x2F;&#x2F;kubeedge.io&#x2F;</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">WorkingDirectory&#x3D;&#x2F;opt&#x2F;kubeedge&#x2F;edge</span><br><span class="line">ExecStart&#x3D;&#x2F;opt&#x2F;kubeedge&#x2F;edge&#x2F;edgecore</span><br><span class="line">Restart&#x3D;always</span><br><span class="line">StartLimitInterval&#x3D;0</span><br><span class="line">RestartSec&#x3D;10</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy&#x3D;multi-user.target</span><br><span class="line">EOF</span><br><span class="line">systemctl daemon-reload</span><br><span class="line">systemctl start kubeedge-edge</span><br><span class="line">systemctl enable kubeedge-edge</span><br></pre></td></tr></table></figure>
-
-<h4 id="检查状态"><a href="#检查状态" class="headerlink" title="检查状态"></a>检查状态</h4><p>启动Cloud and Edge部件后，可以使用以下命令检查边缘节点状态。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">kubectl get nodes</span><br><span class="line">NAME                                   STATUS   ROLES    AGE   VERSION</span><br><span class="line">fb4ebb70-2783-42b8-b3ef-63e2fd6d242e   Ready    edge     50m   v1.15.3-kubeedge-v1.1.0</span><br><span class="line">kubeedge.localdomain                   Ready    master   90m   v1.14.3kubectl get nodes</span><br></pre></td></tr></table></figure>
-
-<p>请确保您创建的边缘节点的状态为ready。</p>
-<h3 id="在云端部署应用"><a href="#在云端部署应用" class="headerlink" title="在云端部署应用"></a>在云端部署应用</h3><p>请按照以下步骤尝试部署示例应用程序。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;kubeedge&#x2F;kubeedge&#x2F;master&#x2F;build&#x2F;deployment.yaml</span><br></pre></td></tr></table></figure>
-
-<p>注意：目前，对于在边缘节点上运行的应用程序，我们不支持<code>kubectl logs</code>和<code>kubectl exec</code>命令（将在将来的版本中支持），支持使用EdgeMes​​h在同一子网中的边缘节点上运行的Pod到Pod通信。</p>
-<p>在云端查看pod</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods</span><br><span class="line">NAME                               READY   STATUS    RESTARTS   AGE</span><br><span class="line">nginx-deployment-d86dfb797-8n7bg   1&#x2F;1     Running   0          4m15s</span><br></pre></td></tr></table></figure>
-
-<p>在边缘节点查看服务</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">netstat -tulnp | grep docker-proxy</span><br><span class="line">tcp6       0      0 :::80                   :::*                    LISTEN      462&#x2F;docker-proxy</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
 
 
 
@@ -1315,7 +1276,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-count">11</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
