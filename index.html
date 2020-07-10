@@ -175,6 +175,167 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.renkeju.com/2020/07/10/lotus/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Keju Ren">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="时光穿梭机">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/07/10/lotus/" class="post-title-link" itemprop="url">cobbler 部署与实践</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-07-10 19:34:33 / 修改时间：19:36:45" itemprop="dateCreated datePublished" datetime="2020-07-10T19:34:33+08:00">2020-07-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="lotus-安装"><a href="#lotus-安装" class="headerlink" title="lotus 安装"></a>lotus 安装</h2><h3 id="配置环境变量"><a href="#配置环境变量" class="headerlink" title="配置环境变量"></a>配置环境变量</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"># lotus 路径：</span><br><span class="line">LOTUS_PATH</span><br><span class="line"># 例如： export LOTUS_PATH&#x3D;&#x2F;home&#x2F;user&#x2F;nvme_disk&#x2F;lotus</span><br><span class="line"></span><br><span class="line"># miner 路径： </span><br><span class="line">LOTUS_STORAGE_PATH</span><br><span class="line"># 例如： export LOTUS_STORAGE_PATH&#x3D;&#x2F;home&#x2F;user&#x2F;nvme_disk&#x2F;lotusstorage</span><br><span class="line"></span><br><span class="line"># worker 路径： </span><br><span class="line">WORKER_PATH</span><br><span class="line"># 例如： export WORKER_PATH&#x3D;&#x2F;home&#x2F;user&#x2F;nvme_disk&#x2F;lotusworker</span><br><span class="line"></span><br><span class="line"># proof 证明参数路径： </span><br><span class="line">FIL_PROOFS_PARAMETER_CACHE</span><br><span class="line"># 例如： export FIL_PROOFS_PARAMETER_CACHE&#x3D;&#x2F;home&#x2F;user&#x2F;nvme_disk&#x2F;filecoin-proof-parameters</span><br><span class="line"></span><br><span class="line"># 临时文件夹路径： </span><br><span class="line">TMPDIR</span><br><span class="line"># 例如： export TMPDIR&#x3D;&#x2F;home&#x2F;user&#x2F;nvme_disk&#x2F;tmp</span><br><span class="line"></span><br><span class="line"># 最大化内存参数</span><br><span class="line">FIL_PROOFS_MAXIMIZE_CACHING</span><br><span class="line"># 例如： export FIL_PROOFS_MAXIMIZE_CACHING&#x3D;1</span><br><span class="line"></span><br><span class="line"># Rust 日志</span><br><span class="line">RUST_LOG</span><br><span class="line"># 例如： export RUST_LOG&#x3D;Debug</span><br><span class="line"></span><br><span class="line"># GPU计算Precommit2</span><br><span class="line">FIL_PROOFS_USE_GPU_COLUMN_BUILDER</span><br><span class="line"># 例如： export FIL_PROOFS_USE_GPU_COLUMN_BUILDER&#x3D;1</span><br><span class="line"></span><br><span class="line"># 源码编译底层库</span><br><span class="line">FFI_BUILD_FROM_SOURCE</span><br><span class="line"># 例如： export FFI_BUILD_FROM_SOURCE&#x3D;1</span><br><span class="line"></span><br><span class="line"># GOLANG 代理</span><br><span class="line">GOPROXY</span><br><span class="line"># 例如： export GOPROXY&#x3D;https:&#x2F;&#x2F;goproxy.cn</span><br><span class="line"></span><br><span class="line"># 启动小扇区支持</span><br><span class="line">FIL_USE_SMALL_SECTORS</span><br><span class="line"># 例如： export FIL_USE_SMALL_SECTORS&#x3D;true</span><br><span class="line"></span><br><span class="line"># 显卡相关</span><br><span class="line">BELLMAN_CUSTOM_GPU</span><br><span class="line"># 例如： export BELLMAN_CUSTOM_GPU&#x3D;&quot;GeForce RTX 2080 Ti:4352&quot;</span><br><span class="line"></span><br><span class="line"># 下载证明参数代理：</span><br><span class="line">IPFS_GATEWAY</span><br><span class="line"># 例如： export IPFS_GATEWAY&#x3D;&quot;https:&#x2F;&#x2F;proof-parameters.s3.cn-south-1.jdcloud-oss.com&#x2F;ipfs&#x2F;&quot;</span><br><span class="line"></span><br><span class="line"># 启用 GPU 计算 Precommit2 中的部分过程</span><br><span class="line">FIL_PROOFS_USE_GPU_TREE_BUILDER</span><br><span class="line">FIL_PROOFS_USE_GPU_COLUMN_BUILDER</span><br><span class="line"># 例如：export FIL_PROOFS_USE_GPU_TREE_BUILDER&#x3D;1</span><br><span class="line"># 例如：export FIL_PROOFS_USE_GPU_COLUMN_BUILDER&#x3D;1</span><br></pre></td></tr></table></figure>
+
+<h3 id="安装依赖"><a href="#安装依赖" class="headerlink" title="安装依赖"></a>安装依赖</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># apt update </span><br><span class="line"># apt -y install mesa-opencl-icd ocl-icd-opencl-dev gcc git bzr jq pkg-config curl git</span><br><span class="line"># HTTP_PROXY&#x3D;http:&#x2F;&#x2F;192.168.1.131:8118 HTTPS_PROXY&#x3D;http:&#x2F;&#x2F;192.168.1.131:8118 curl --proto &#39;&#x3D;https&#39; --tlsv1.2 -sSf https:&#x2F;&#x2F;sh.rustup.rs | RUSTUP_INIT_SKIP_PATH_CHECK&#x3D;yes HTTP_PROXY&#x3D;http:&#x2F;&#x2F;192.168.1.131:8118 HTTPS_PROXY&#x3D;http:&#x2F;&#x2F;192.168.1.131:8118 sh</span><br><span class="line"># source $HOME&#x2F;.cargo&#x2F;env &amp;&amp; echo &quot;source $HOME&#x2F;.cargo&#x2F;env&quot; &gt;&gt; &#x2F;root&#x2F;.bashrc</span><br></pre></td></tr></table></figure>
+
+<h3 id="获取代码"><a href="#获取代码" class="headerlink" title="获取代码"></a>获取代码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># git clone https:&#x2F;&#x2F;github.com&#x2F;filecoin-project&#x2F;lotus.git</span><br></pre></td></tr></table></figure>
+
+<h3 id="切换标签"><a href="#切换标签" class="headerlink" title="切换标签"></a>切换标签</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># cd lotus</span><br><span class="line"># git tag     ## 查看所有标签</span><br><span class="line"># git checkout v0.4.1        ## 切换标签</span><br><span class="line"># git branch				## 查看所在标签</span><br></pre></td></tr></table></figure>
+
+<h3 id="从源代码构建-Lotus-二进制文件并安装"><a href="#从源代码构建-Lotus-二进制文件并安装" class="headerlink" title="从源代码构建 Lotus 二进制文件并安装"></a>从源代码构建 Lotus 二进制文件并安装</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># make clean &amp;&amp; HTTP_PROXY&#x3D;http:&#x2F;&#x2F;192.168.1.131:8118 HTTPS_PROXY&#x3D;http:&#x2F;&#x2F;192.168.1.131:8118 make all</span><br><span class="line"># make install</span><br></pre></td></tr></table></figure>
+
+<h4 id="编译参数"><a href="#编译参数" class="headerlink" title="编译参数"></a>编译参数</h4><p>v26/v27版本代码的编译命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 启用 GPU 相关环境变量【Precommit2 的时候可以使用 GPU 计算】</span><br><span class="line">env HTTP_PROXY&#x3D;http:&#x2F;&#x2F;192.168.1.131:8118 HTTPS_PROXY&#x3D;http:&#x2F;&#x2F;192.168.1.131:8118 RUSTFLAGS&#x3D;&quot;-C target-cpu&#x3D;native -g&quot; FIL_PROOFS_USE_GPU_COLUMN_BUILDER&#x3D;1 FIL_PROOFS_USE_GPU_TREE_BUILDER&#x3D;1 FFI_BUILD_FROM_SOURCE&#x3D;1 make clean all bench &amp;&amp; make install</span><br></pre></td></tr></table></figure>
+
+<h3 id="将Lotus与systemd一起使用"><a href="#将Lotus与systemd一起使用" class="headerlink" title="将Lotus与systemd一起使用"></a>将Lotus与systemd一起使用</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># make install-services</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>需要注意的是，如果你使用远程lotus-daemon，需要将 /usr/local/lib/systemd/system/lotus-miner.service 中的<code>After=lotus-daemon.service</code>和<code>Requires=lotus-daemon.service</code>删除掉，以免本地lotus-daemon启动。</p>
+<p>另外，你也可以将环境变量写入 systemd 中，管理启动时的环境变量。示例如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Environment&#x3D;FIL_PROOFS_PARAMETER_CACHE&#x3D;&#x2F;mnt&#x2F;lotus&#x2F;filecoin-proof-parameters</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h4 id="跟踪服务的日志"><a href="#跟踪服务的日志" class="headerlink" title="跟踪服务的日志"></a>跟踪服务的日志</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo journalctl -u lotus-daemon -f</span><br></pre></td></tr></table></figure>
+
+<h4 id="以相反的顺序查看日志"><a href="#以相反的顺序查看日志" class="headerlink" title="以相反的顺序查看日志"></a>以相反的顺序查看日志</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo journalctl -u lotus-daemon -r</span><br></pre></td></tr></table></figure>
+
+<h2 id="系统调试"><a href="#系统调试" class="headerlink" title="系统调试"></a>系统调试</h2><h3 id="增加-Swap-分区"><a href="#增加-Swap-分区" class="headerlink" title="增加 Swap 分区"></a>增加 Swap 分区</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># fdisk &#x2F;dev&#x2F;nvme0n1</span><br></pre></td></tr></table></figure>
+
+<p>使用 fdisk 格式完成分区之后，将新建分区标记为 83 swap 类型分区，然后使用如下命令进行挂载：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># mkswap -c &#x2F;dev&#x2F;nvme0n1p1   ## 检查是否有坏块</span><br><span class="line"># swapon -v &#x2F;dev&#x2F;nvme0n1p1</span><br></pre></td></tr></table></figure>
+
+<p>最后使用 fstab 文件进行开机挂载</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;dev&#x2F;nvme0n1p1 			none            swap    sw              0       0</span><br></pre></td></tr></table></figure>
+
+<h3 id="打开文件限制"><a href="#打开文件限制" class="headerlink" title="打开文件限制"></a>打开文件限制</h3><h4 id="通过-limits-conf-修改文件限制"><a href="#通过-limits-conf-修改文件限制" class="headerlink" title="通过 limits.conf 修改文件限制"></a>通过 limits.conf 修改文件限制</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cat &lt;&lt; EOF &gt;&gt; &#x2F;etc&#x2F;security&#x2F;limits.conf</span><br><span class="line">*               soft    core            10000</span><br><span class="line">*               hard    core            10000</span><br><span class="line">*               soft    nproc            10000</span><br><span class="line">*               hard    nproc            10000</span><br><span class="line">*               soft    nofile            10000</span><br><span class="line">*               hard    nofile            10000</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<h4 id="或使用-systemd-修改文件限制"><a href="#或使用-systemd-修改文件限制" class="headerlink" title="或使用 systemd 修改文件限制"></a>或使用 systemd 修改文件限制</h4><p>在 <code>lotus-daemon.service</code>文件中加入如下内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[Service]</span><br><span class="line">LimitCORE&#x3D;infinity</span><br><span class="line">LimitNOFILE&#x3D;10000</span><br><span class="line">LimitNPROC&#x3D;10000</span><br></pre></td></tr></table></figure>
+
+<p>修改完成重新加载 <code>lotus-daemon.service</code> 文件，并重启lotus-daemon服务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># systemctl daemon-reload</span><br><span class="line"># systemctl restart lotus-daemon</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用远程-daemon"><a href="#使用远程-daemon" class="headerlink" title="使用远程 daemon"></a>使用远程 daemon</h2><p>假设daemon在 <code>192.168.1.100</code> 机器上，miner在 <code>192.168.1.101</code> 机器上：</p>
+<ol>
+<li>修改远程 daemon (192.168.1.100)上 <code>~/.lotus/config.toml</code> 中的 <code>ListenAddress</code> 为：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># Default config:</span><br><span class="line">[API]</span><br><span class="line">ListenAddress &#x3D; &quot;&#x2F;ip4&#x2F;192.168.1.100&#x2F;tcp&#x2F;1234&#x2F;http&quot;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>将远程 daemon (192.168.1.100) 上 <code>~/.lotus</code> 目录下的 <code>api</code> 和 <code>token</code> 拷贝到 miner 机器(192.168.1.101)的 <code>~/.lotus</code> 目录下，miner主机不用启动lotus-daemon。</li>
+<li>重启miner机器的 miner 服务即可。</li>
+</ol>
+<h2 id="Testnet3-集群配置"><a href="#Testnet3-集群配置" class="headerlink" title="Testnet3 集群配置"></a>Testnet3 集群配置</h2><h3 id="修改-miner"><a href="#修改-miner" class="headerlink" title="修改 miner"></a>修改 miner</h3><p>修改 miner <code>~/.lotusstorage/config.toml</code> 里面的 <code>ListenAddress</code> 和 <code>RemoteListenAddress</code> ，把这两个变量中的地址都改为 miner 本机的地址:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[API]</span><br><span class="line">ListenAddress &#x3D; &quot;&#x2F;ip4&#x2F;192.168.1.100&#x2F;tcp&#x2F;2345&#x2F;http&quot;</span><br><span class="line">RemoteListenAddress &#x3D; &quot;192.168.1.100:2345&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="配置-worker"><a href="#配置-worker" class="headerlink" title="配置 worker"></a>配置 worker</h3><p>在 <strong>启动了 miner 之后</strong>，复制 miner 的 <code>~/.lotusstorage</code> 目录中的 <code>token</code> 和 <code>api</code> 到 worker 中的 <code>~/.lotusstorage</code> （worker 中没有这个目录就手动创建一个），然后启动 worker 即可。</p>
+<h3 id="启动-worker"><a href="#启动-worker" class="headerlink" title="启动 worker"></a>启动 worker</h3><p>编辑 lotus-seal-worker systemd 文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">cat &lt;&lt; EOF &gt; &#x2F;usr&#x2F;local&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;lotus-worker.service </span><br><span class="line">[Unit]</span><br><span class="line">Description&#x3D;Lotus Storage Miner</span><br><span class="line">After&#x3D;network.target</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">ExecStart&#x3D;&#x2F;usr&#x2F;local&#x2F;bin&#x2F;lotus-storage-miner run</span><br><span class="line">Environment&#x3D;GOLOG_FILE&#x3D;&quot;&#x2F;var&#x2F;log&#x2F;lotus&#x2F;miner.log&quot;</span><br><span class="line">Environment&#x3D;GOLOG_LOG_FMT&#x3D;&quot;json&quot;</span><br><span class="line">Environment&#x3D;FIL_PROOFS_PARAMETER_CACHE&#x3D;&#x2F;mnt&#x2F;lotus&#x2F;filecoin-proof-parameters</span><br><span class="line">Environment&#x3D;LOTUS_STORAGE_PATH&#x3D;&#x2F;mnt&#x2F;lotus&#x2F;lotusstorage</span><br><span class="line">Environment&#x3D;WORKER_PATH&#x3D;&#x2F;mnt&#x2F;lotus&#x2F;lotusworker</span><br><span class="line">Environment&#x3D;TMPDIR&#x3D;&#x2F;mnt&#x2F;lotus&#x2F;tmp</span><br><span class="line">Environment&#x3D;FIL_PROOFS_MAXIMIZE_CACHING&#x3D;1</span><br><span class="line">Environment&#x3D;RUST_LOG&#x3D;Debug</span><br><span class="line">Environment&#x3D;FIL_PROOFS_USE_GPU_COLUMN_BUILDER&#x3D;1</span><br><span class="line">Environment&#x3D;FIL_PROOFS_USE_GPU_TREE_BUILDER&#x3D;1</span><br><span class="line">Environment&#x3D;FFI_BUILD_FROM_SOURCE&#x3D;1</span><br><span class="line">Environment&#x3D;GOPROXY&#x3D;https:&#x2F;&#x2F;goproxy.cn</span><br><span class="line">Environment&#x3D;FIL_USE_SMALL_SECTORS&#x3D;true</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy&#x3D;multiuser.target</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># lotus-seal-worker run --address&#x3D;192.168.1.201:2333 --precommit1&#x3D;false --precommit2&#x3D;true --commit&#x3D;true</span><br></pre></td></tr></table></figure>
+
+<p>启动worker需要注意以下几点：</p>
+<ul>
+<li>要给 worker 指定<strong>本机地址</strong>和一个<strong>随机端口（至少四位数）</strong>;</li>
+<li><code>precommit1</code>、<code>precommit2</code> 和 <code>commit</code> 默认是启用的，如果想要禁用，可以设置为 <code>false</code>，例如： <code>--precommit1=false</code>;</li>
+<li><code>commit</code> 参数是配置 <code>commit2</code> 的，<code>commit1</code> 无法在 Worker 中启用。</li>
+</ul>
+<h2 id="生成钱包"><a href="#生成钱包" class="headerlink" title="生成钱包"></a>生成钱包</h2><h3 id="初始化一个新钱包"><a href="#初始化一个新钱包" class="headerlink" title="初始化一个新钱包"></a>初始化一个新钱包</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># lotus wallet new</span><br></pre></td></tr></table></figure>
+
+<p>有时，您的操作系统可能会将文件名的长度限制为150个字符以下。您需要使用支持长文件名的文件系统。</p>
+<p>这是响应的示例：</p>
+<p><code>t1aswwvjsae63tcrniz6x5ykvsuotlgkvlulnqpsi</code></p>
+<ul>
+<li>访问<a href="https://faucet.testnet.filecoin.io/" target="_blank" rel="noopener">水龙头</a>以增加资金。</li>
+<li>粘贴您创建的地址。</li>
+<li>按发送按钮。</li>
+</ul>
+<h2 id="存储矿工"><a href="#存储矿工" class="headerlink" title="存储矿工"></a>存储矿工</h2><p>请使用以下命令确保您的钱包中至少有一个BLS地址（以t3开头）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># lotus wallet list</span><br></pre></td></tr></table></figure>
+
+<p>如果您没有bls地址，请创建一个新的bls钱包：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># lotus wallet new bls</span><br></pre></td></tr></table></figure>
+
+<p>使用您的钱包地址：</p>
+<ul>
+<li>访问[水龙头][<a href="https://faucet.testnet.filecoin.io/]" target="_blank" rel="noopener">https://faucet.testnet.filecoin.io/]</a></li>
+<li>点击 “Create Miner”</li>
+<li>不要刷新页面。此操作可能需要一些时间。</li>
+</ul>
+<p>当您看到以下内容时，任务将完成：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">New storage miners address is: &lt;YOUR_NEW_MINING_ADDRESS&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="初始化矿工"><a href="#初始化矿工" class="headerlink" title="初始化矿工"></a>初始化矿工</h3><p>在CLI窗口中，使用以下命令启动您的矿工：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># lotus-storage-miner init --actor&#x3D;ACTOR_VALUE_RECEIVED --owner&#x3D;OWNER_VALUE_RECEIVED</span><br></pre></td></tr></table></figure>
+
+<p>您将需要等待一段时间才能完成此操作。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://blog.renkeju.com/2020/06/13/facileManager/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1112,112 +1273,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://blog.renkeju.com/2020/05/11/network_device_monitor/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.png">
-      <meta itemprop="name" content="Keju Ren">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="时光穿梭机">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/05/11/network_device_monitor/" class="post-title-link" itemprop="url">网络设备监控系统</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-05-11 14:43:59" itemprop="dateCreated datePublished" datetime="2020-05-11T14:43:59+08:00">2020-05-11</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>在监控系统中的实践中发现，现在开源软件中针对网络设备的监控系统使用比较广泛的有 cacti 和 zabbix。其中cacti 的功能比较单一，主要针对网络设备。而 zabbix 监控可以覆盖到设备层、系统层、中间件层等。但是这两款监控系统都存在因为架构设计造成的一些短板。比如 cacti 高可用性比较差，zabbix 对一些协议的采集过于复杂，配置繁琐等。</p>
-<h2 id="cacti"><a href="#cacti" class="headerlink" title="cacti"></a>cacti</h2><p>cacti 使用的 RDD tool 时序数据库提供数据存储，但是RDD tool 并不能作为分布式，数据只能存放在单一节点上。所以我们只能对一台主机进行纵向扩展来提高数据的存储量与查询性能。<br>所以现在 cacti 只对公司的网络设备进行流量采集作为与客户结算费用使用，并不对设备性能与流量进行报警。<br>常见计费方式多为 95 计费：</p>
-<p><img src="/images/network_device_monitor/95th_zh-CN.png" alt="95计费计算方式"></p>
-<h2 id="zabbix"><a href="#zabbix" class="headerlink" title="zabbix"></a>zabbix</h2><p>zabbix 提供了丰富的模版，并且 SNMP 协议也可以使用自动发现机制对网络设备进行监控，从效率上大大提高了网络设备指标的采集。zabbix 对分布式有非常好的支持，zabbix proxy 可以让我们在不同的网域进行数据采集，最终在汇集到 zabbix-server 中。zabbix 的数据存储使用的是 mysql 或 DB2，从扩展性上也是非常强大的。但是mysql 属于关系型数据库，并非时序数据库，所以在针对线性时间数据存储的方面，需要运维人员对数据库的维护格外小心，因为数据表与表之间的耦合性非常高。</p>
-<p>所在zabbix监控与 cacti 监控并存，主要作用为报警，对数据的存储时间周期要求并不高。</p>
-<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>我曾考虑替换 zabbix 后端存储数据库，因为在 zabbix 4.0+ 版本后，zabbix 已经支持对接 elasticsearch。当zabbix的历史数据存储到 elasticsearch 后，zabbix 的历史检索性相比之前使用 mysql 确实有很大的提高，但是整体架构却变得更加复杂，因为我使用了 10 台主机去单独作为 elasticsearch 集群。</p>
-<table>
-<thead>
-<tr>
-<th>节点数量</th>
-<th>角色</th>
-<th>CPU</th>
-<th>内存</th>
-<th>数据存储</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>3</td>
-<td>master</td>
-<td>2</td>
-<td>4G</td>
-<td>None</td>
-</tr>
-<tr>
-<td>1</td>
-<td>Ingest</td>
-<td>2</td>
-<td>4G</td>
-<td>None</td>
-</tr>
-<tr>
-<td>1</td>
-<td>Coordingting</td>
-<td>2</td>
-<td>4G</td>
-<td>None</td>
-</tr>
-<tr>
-<td>5</td>
-<td>date</td>
-<td>8</td>
-<td>16G</td>
-<td>1T</td>
-</tr>
-</tbody></table>
-<p><img src="/images/network_device_monitor/elasticsearch_nodes.png" alt="Elasticsearch 节点与角色"></p>
-<p>替换了elasticsearch之后确实性能有了很大的提高，但是elasticsearch 属于倒排数据库，每个文本为了记录一个指标的数据，附带了很多其他额外的数据。虽然这样提高的检索的速度，但在存储海量数据上并不合适。</p>
-<p>对于一个IDC或者一个运营网络的企业来说，我们并不需要定制自己监控系统。但现有我们可用的开源监控系统都各有千秋，我们很难顾此失彼去做一个抉择，因为一旦监控系统上线运行，替换监控系统就相当于高速路上换引擎，是一件非常危险的事情。</p>
-<p>刚才的这些已经属于先贬后仰，后面我一定会抛出一套我认为更加优秀的监控系统。但是我想在此之前着重提示一下，并不是 zabbix 与 cacti 不优秀、有缺陷，而是我们应该去了解更多不同的产品，根据自己的业务选择合适监控系统。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1289,20 +1344,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
