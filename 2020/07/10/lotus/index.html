@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"blog.renkeju.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="系统调试关闭 Swap 分区 临时关闭 swap 分区   1# swapoff -a  永久关闭swap分区，但是执行此命令之后需要重启系统！   1# sed -i.bak &#39;&#x2F; swap &#x2F; s&#x2F;^\(.*\)$&#x2F;#\1&#x2F;g&#39; &#x2F;etc&#x2F;fstab    定时任务123456SHELL&#x3D;&amp;#x2F">
+  <meta name="description" content="系统调试关闭 Swap 分区 临时关闭 swap 分区   1# swapoff -a  永久关闭swap分区，但是执行此命令之后需要重启系统！   1# sed -i.bak &#39;&#x2F; swap &#x2F; s&#x2F;^\(.*\)$&#x2F;#\1&#x2F;g&#39; &#x2F;etc&#x2F;fstab    定时任务 配置定时任务所依赖的Service  12">
 <meta property="og:type" content="article">
 <meta property="og:title" content="lotus 部署与实践">
 <meta property="og:url" content="https://blog.renkeju.com/2020/07/10/lotus/index.html">
 <meta property="og:site_name" content="时光穿梭机">
-<meta property="og:description" content="系统调试关闭 Swap 分区 临时关闭 swap 分区   1# swapoff -a  永久关闭swap分区，但是执行此命令之后需要重启系统！   1# sed -i.bak &#39;&#x2F; swap &#x2F; s&#x2F;^\(.*\)$&#x2F;#\1&#x2F;g&#39; &#x2F;etc&#x2F;fstab    定时任务123456SHELL&#x3D;&amp;#x2F">
+<meta property="og:description" content="系统调试关闭 Swap 分区 临时关闭 swap 分区   1# swapoff -a  永久关闭swap分区，但是执行此命令之后需要重启系统！   1# sed -i.bak &#39;&#x2F; swap &#x2F; s&#x2F;^\(.*\)$&#x2F;#\1&#x2F;g&#39; &#x2F;etc&#x2F;fstab    定时任务 配置定时任务所依赖的Service  12">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-07-10T11:34:33.599Z">
-<meta property="article:modified_time" content="2020-09-18T14:21:48.879Z">
+<meta property="article:modified_time" content="2020-09-22T02:34:24.990Z">
 <meta property="article:author" content="Keju Ren">
 <meta property="article:tag" content="filecoin">
 <meta property="article:tag" content="lotus">
@@ -209,7 +209,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-09-18 22:21:48" itemprop="dateModified" datetime="2020-09-18T22:21:48+08:00">2020-09-18</time>
+                <time title="修改时间：2020-09-22 10:34:24" itemprop="dateModified" datetime="2020-09-22T10:34:24+08:00">2020-09-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -241,8 +241,18 @@
 
 </li>
 </ul>
-<h3 id="定时任务"><a href="#定时任务" class="headerlink" title="定时任务"></a>定时任务</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">SHELL&#x3D;&#x2F;bin&#x2F;bash</span><br><span class="line">PATH&#x3D;&#x2F;root&#x2F;.cargo&#x2F;bin:&#x2F;root&#x2F;.cargo&#x2F;bin:&#x2F;usr&#x2F;local&#x2F;sbin:&#x2F;usr&#x2F;local&#x2F;bin:&#x2F;usr&#x2F;sbin:&#x2F;usr&#x2F;bin:&#x2F;sbin:&#x2F;bin:&#x2F;usr&#x2F;games:&#x2F;usr&#x2F;local&#x2F;games:&#x2F;snap&#x2F;bin</span><br><span class="line">MAILTO&#x3D;root</span><br><span class="line"></span><br><span class="line">0 * * * * &#x2F;usr&#x2F;local&#x2F;bin&#x2F;lotus-storage-miner sectors pledge</span><br><span class="line">30 * * * * &#x2F;usr&#x2F;local&#x2F;bin&#x2F;lotus-storage-miner sectors pledge</span><br></pre></td></tr></table></figure>
+<h3 id="定时任务"><a href="#定时任务" class="headerlink" title="定时任务"></a>定时任务</h3><ol>
+<li><p>配置定时任务所依赖的Service</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># cat &lt;&lt; EOF &gt; &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;lotus-sector-pledge.service</span><br><span class="line">[Unit]</span><br><span class="line">Description&#x3D;Lotus Sector Pledge</span><br><span class="line">After&#x3D;lotus-miner.service</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">ExecStart&#x3D;&#x2F;usr&#x2F;local&#x2F;bin&#x2F;lotus-miner sectors pledge</span><br><span class="line">Type&#x3D;oneshot</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy&#x3D;multi-user.target</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>设定定时任务</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># cat &lt;&lt; EOF &gt; &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;lotus-sector-pledge.timer</span><br><span class="line">[Unit]</span><br><span class="line">Description&#x3D;Runs lotus sector pledge</span><br><span class="line"></span><br><span class="line">[Timer]</span><br><span class="line">OnBootSec&#x3D;30m</span><br><span class="line">OnUnitActiveSec&#x3D;45m</span><br><span class="line">AccuracySec&#x3D;10m</span><br><span class="line">Unit&#x3D;lotus-sector-pledge.service</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy&#x3D;multi-user.target</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>设置开机自启动</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># systemctl daemon-reload</span><br><span class="line"># systemctl enable --now lotus-sector-pledge.timer</span><br><span class="line"># systemctl list-timer</span><br></pre></td></tr></table></figure>
 
+</li>
+</ol>
 <p>定时任务建议根据<code>lotus-banch</code>测试出<code>addPiece</code>的时间，调整时间间隔，当然，后端的服务器也需要有能力消化。</p>
 <h3 id="安装显卡驱动"><a href="#安装显卡驱动" class="headerlink" title="安装显卡驱动"></a>安装显卡驱动</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># apt update </span><br><span class="line"># apt -y upgrade </span><br><span class="line"># apt -y install nvidia-driver-440 nvtop</span><br><span class="line"># systemctl set-default multi-user.target</span><br><span class="line"># reboot</span><br></pre></td></tr></table></figure>
 

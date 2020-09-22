@@ -627,7 +627,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-09-18 22:21:48" itemprop="dateModified" datetime="2020-09-18T22:21:48+08:00">2020-09-18</time>
+                <time title="修改时间：2020-09-22 10:34:24" itemprop="dateModified" datetime="2020-09-22T10:34:24+08:00">2020-09-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -659,8 +659,18 @@
 
 </li>
 </ul>
-<h3 id="定时任务"><a href="#定时任务" class="headerlink" title="定时任务"></a>定时任务</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">SHELL&#x3D;&#x2F;bin&#x2F;bash</span><br><span class="line">PATH&#x3D;&#x2F;root&#x2F;.cargo&#x2F;bin:&#x2F;root&#x2F;.cargo&#x2F;bin:&#x2F;usr&#x2F;local&#x2F;sbin:&#x2F;usr&#x2F;local&#x2F;bin:&#x2F;usr&#x2F;sbin:&#x2F;usr&#x2F;bin:&#x2F;sbin:&#x2F;bin:&#x2F;usr&#x2F;games:&#x2F;usr&#x2F;local&#x2F;games:&#x2F;snap&#x2F;bin</span><br><span class="line">MAILTO&#x3D;root</span><br><span class="line"></span><br><span class="line">0 * * * * &#x2F;usr&#x2F;local&#x2F;bin&#x2F;lotus-storage-miner sectors pledge</span><br><span class="line">30 * * * * &#x2F;usr&#x2F;local&#x2F;bin&#x2F;lotus-storage-miner sectors pledge</span><br></pre></td></tr></table></figure>
+<h3 id="定时任务"><a href="#定时任务" class="headerlink" title="定时任务"></a>定时任务</h3><ol>
+<li><p>配置定时任务所依赖的Service</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># cat &lt;&lt; EOF &gt; &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;lotus-sector-pledge.service</span><br><span class="line">[Unit]</span><br><span class="line">Description&#x3D;Lotus Sector Pledge</span><br><span class="line">After&#x3D;lotus-miner.service</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">ExecStart&#x3D;&#x2F;usr&#x2F;local&#x2F;bin&#x2F;lotus-miner sectors pledge</span><br><span class="line">Type&#x3D;oneshot</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy&#x3D;multi-user.target</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>设定定时任务</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># cat &lt;&lt; EOF &gt; &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;lotus-sector-pledge.timer</span><br><span class="line">[Unit]</span><br><span class="line">Description&#x3D;Runs lotus sector pledge</span><br><span class="line"></span><br><span class="line">[Timer]</span><br><span class="line">OnBootSec&#x3D;30m</span><br><span class="line">OnUnitActiveSec&#x3D;45m</span><br><span class="line">AccuracySec&#x3D;10m</span><br><span class="line">Unit&#x3D;lotus-sector-pledge.service</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy&#x3D;multi-user.target</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>设置开机自启动</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># systemctl daemon-reload</span><br><span class="line"># systemctl enable --now lotus-sector-pledge.timer</span><br><span class="line"># systemctl list-timer</span><br></pre></td></tr></table></figure>
 
+</li>
+</ol>
 <p>定时任务建议根据<code>lotus-banch</code>测试出<code>addPiece</code>的时间，调整时间间隔，当然，后端的服务器也需要有能力消化。</p>
 <h3 id="安装显卡驱动"><a href="#安装显卡驱动" class="headerlink" title="安装显卡驱动"></a>安装显卡驱动</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># apt update </span><br><span class="line"># apt -y upgrade </span><br><span class="line"># apt -y install nvidia-driver-440 nvtop</span><br><span class="line"># systemctl set-default multi-user.target</span><br><span class="line"># reboot</span><br></pre></td></tr></table></figure>
 
