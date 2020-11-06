@@ -175,6 +175,117 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.renkeju.com/2020/11/06/cobbler/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Keju Ren">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="时光穿梭机">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/11/06/cobbler/" class="post-title-link" itemprop="url">cobbler 部署与实践</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-11-06 14:33:03" itemprop="dateCreated datePublished" datetime="2020-11-06T14:33:03+08:00">2020-11-06</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%87%AA%E5%8A%A8%E5%8C%96/" itemprop="url" rel="index"><span itemprop="name">自动化</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="初始化环境"><a href="#初始化环境" class="headerlink" title="初始化环境"></a>初始化环境</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># yum -y install epel-release</span><br><span class="line"># yum makecache</span><br><span class="line"># yum -y update</span><br><span class="line"># systemctl --now disable postfix firewalld</span><br><span class="line"># setenforce 0</span><br><span class="line"># sed -i &#39;s@^\(SELINUX&#x3D;\).*@\1disabled@&#39; &#x2F;etc&#x2F;sysconfig&#x2F;selinux</span><br><span class="line"># sed -i &#39;s@^\(SELINUX&#x3D;\).*@\1disabled@&#39; &#x2F;etc&#x2F;selinux&#x2F;config</span><br><span class="line"># reboot</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装软件"><a href="#安装软件" class="headerlink" title="安装软件"></a>安装软件</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># yum -y install cobbler cobbler-web pykickstart httpd tftp-server rsync debmirror fence-agents xinetd dhcp bind</span><br><span class="line"># systemctl --now enable cobblerd httpd rsyncd dhcpd named xinetd</span><br></pre></td></tr></table></figure>
+
+<h2 id="检查"><a href="#检查" class="headerlink" title="检查"></a>检查</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># cobbler check</span><br><span class="line">The following are potential configuration items that you may want to fix:</span><br><span class="line"></span><br><span class="line">1 : The &#39;server&#39; field in &#x2F;etc&#x2F;cobbler&#x2F;settings must be set to something other than localhost, or kickstarting features will not work.  This should be a resolvable hostname or IP for the boot server as reachable by all machines that will use it.</span><br><span class="line">2 : For PXE to be functional, the &#39;next_server&#39; field in &#x2F;etc&#x2F;cobbler&#x2F;settings must be set to something other than 127.0.0.1, and should match the IP of the boot server on the PXE network.   </span><br><span class="line">3 : SELinux is enabled. Please review the following wiki page for details on ensuring cobbler works correctly in your SELinux environment:</span><br><span class="line">    https:&#x2F;&#x2F;github.com&#x2F;cobbler&#x2F;cobbler&#x2F;wiki&#x2F;Selinux</span><br><span class="line">4 : Some network boot-loaders are missing from &#x2F;var&#x2F;lib&#x2F;cobbler&#x2F;loaders, you may run &#39;cobbler get-loaders&#39; to download them, or, if you only want to handle x86&#x2F;x86_64 netbooting, you may ensure that you have installed a *recent* version of the syslinux package installed and can ignore this message entirely.  Files in this directory, should you want to support all architectures, should include pxelinux.0, menu.c32, elilo.efi, and yaboot. The &#39;cobbler get-loaders&#39; command is the easiest way to resolve these requirements.</span><br><span class="line">5 : comment out &#39;dists&#39; on &#x2F;etc&#x2F;debmirror.conf for proper debian support</span><br><span class="line">6 : comment out &#39;arches&#39; on &#x2F;etc&#x2F;debmirror.conf for proper debian support</span><br><span class="line">7 : The default password used by the sample templates for newly installed machines (default_password_crypted in &#x2F;etc&#x2F;cobbler&#x2F;settings) is still set to &#39;cobbler&#39; and should be changed, try: &quot;openssl passwd -1 -salt &#39;random-phrase-here&#39; &#39;your-password-here&#39;&quot; to generate new one</span><br><span class="line"></span><br><span class="line">Restart cobblerd and then run &#39;cobbler sync&#39; to apply changes.</span><br></pre></td></tr></table></figure>
+
+<h2 id="解决报错"><a href="#解决报错" class="headerlink" title="解决报错"></a>解决报错</h2><ul>
+<li><p><code>/etc/cobbler/settings</code> 配置文件中 “server” 字段必须设置为 localhos t以外的 IP 地址,否则 kickstart 将不会工作。应该使用的是一个可解析启动服务器的主机名或所有服务器可以访问的 IP 地址。</p>
+</li>
+<li><p>PXE 放置在 functional 区域,在 <code>/etc/cobbler/settings</code> 配置文件中 “next_server” 字段必须设置为 127.0.0.1 以外的 IP 地址,而且应该匹配 PXE 启动服务器的 IP 网络。</p>
+</li>
+<li><p>检查是否关闭了 SELinux</p>
+</li>
+<li><p><code>/var/lib/cobbler/loaders</code> 文件缺少一些网络引导加载程序,您可以运行 “cobbler get-loaders” 下载,或者,如果您只想处理 x86/x86_64 网络引导,你可以确保您已经安装了一个最近的 recent 版本的 syslinux 包安装和完全可以忽略此消息。这个目录中的文件,你应该要支持所有架构,应包括 pxelinux.0 menu.c32 elilo.efi yaboot。执行 <code>cobbler get-loaders</code> 命令是解决这些需求最简单的方法。</p>
+</li>
+<li><p>在 <code>/etc/debmirror.conf</code> 配置文件中将 <strong>dists</strong> 所在行注释</p>
+</li>
+<li><p>在 <code>/etc/debmirror.conf</code> 配置文件中将 <strong>arches</strong> 所在行注释</p>
+</li>
+<li><p>在新安装的示例模板机器仍将使用 “cobbler” 作为默认密码(/etc/cobbler/settings default_password_crypted)最好更改一下,尝试使用: <code>openssl passwd -1 -salt &#39;random-phrase-here&#39; &#39;your-password-here&#39;</code> 产生新的密码，并将生成的字符串替换到<code>default_password_crypted:</code>后，字符串用双引号括起来。</p>
+</li>
+</ul>
+<p>所有报错解决完成后，再使用 <code>cobbler check</code> 检查，如果不再有错误项，使用<code>systemctl restart cobblerd</code>命令重启cobbler服务。</p>
+<h2 id="配置-cobbler"><a href="#配置-cobbler" class="headerlink" title="配置 cobbler"></a>配置 cobbler</h2><p>配置 <code>/etc/cobbler/settings</code>，让 cobbler 接管 dns、dhcp、rsync 服务，修改配置文件中的内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">manage_dns: 1</span><br><span class="line">manage_dhcp: 1</span><br><span class="line">manage_rsync: 1</span><br></pre></td></tr></table></figure>
+
+<p>修改 cobbler dhcpd <code>/etc/cobbler/dhcp.template</code> 配置模板文件，主要将 dhcp 地址段范围修改与你网卡相同地址段:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><span class="line"># ******************************************************************</span><br><span class="line"># Cobbler managed dhcpd.conf file</span><br><span class="line">#</span><br><span class="line"># generated from cobbler dhcp.conf template ($date)</span><br><span class="line"># Do NOT make changes to &#x2F;etc&#x2F;dhcpd.conf. Instead, make your changes</span><br><span class="line"># in &#x2F;etc&#x2F;cobbler&#x2F;dhcp.template, as &#x2F;etc&#x2F;dhcpd.conf will be</span><br><span class="line"># overwritten.</span><br><span class="line">#</span><br><span class="line">#</span><br><span class="line"># ******************************************************************                                </span><br><span class="line"></span><br><span class="line">ddns-update-style interim;</span><br><span class="line">allow booting;</span><br><span class="line">allow bootp;</span><br><span class="line">ignore client-updates;</span><br><span class="line">set vendorclass &#x3D; option vendor-class-identifier;</span><br><span class="line"></span><br><span class="line">option pxe-system-type code 93 &#x3D; unsigned integer 16;</span><br><span class="line"></span><br><span class="line">subnet 192.168.133.0 netmask 255.255.255.0 &#123;</span><br><span class="line">     option routers             192.168.133.5;</span><br><span class="line">     option domain-name-servers 192.168.133.100;</span><br><span class="line">     option subnet-mask         255.255.255.0;</span><br><span class="line">     range dynamic-bootp        192.168.133.100 192.168.133.254;</span><br><span class="line">     default-lease-time         21600;</span><br><span class="line">     max-lease-time             43200;</span><br><span class="line">     next-server                $next_server;</span><br><span class="line">     class &quot;pxeclients&quot; &#123;</span><br><span class="line">          match if substring (option vendor-class-identifier, 0, 9) &#x3D; &quot;PXEClient&quot;;</span><br><span class="line">          if option pxe-system-type &#x3D; 00:02 &#123;</span><br><span class="line">                  filename &quot;ia64&#x2F;elilo.efi&quot;;</span><br><span class="line">          &#125; else if option pxe-system-type &#x3D; 00:06 &#123;</span><br><span class="line">                  filename &quot;grub&#x2F;grub-x86.efi&quot;;</span><br><span class="line">          &#125; else if option pxe-system-type &#x3D; 00:07 &#123;</span><br><span class="line">                  filename &quot;grub&#x2F;grub-x86_64.efi&quot;;</span><br><span class="line">          &#125; else if option pxe-system-type &#x3D; 00:09 &#123;</span><br><span class="line">                  filename &quot;grub&#x2F;grub-x86_64.efi&quot;;</span><br><span class="line">          &#125; else &#123;</span><br><span class="line">                  filename &quot;pxelinux.0&quot;;</span><br><span class="line">          &#125;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#for dhcp_tag in $dhcp_tags.keys():</span><br><span class="line">    ## group could be subnet if your dhcp tags line up with your subnets</span><br><span class="line">    ## or really any valid dhcpd.conf construct ... if you only use the</span><br><span class="line">    ## default dhcp tag in cobbler, the group block can be deleted for a</span><br><span class="line">    ## flat configuration</span><br><span class="line"># group for Cobbler DHCP tag: $dhcp_tag</span><br><span class="line">group &#123;</span><br><span class="line">        #for mac in $dhcp_tags[$dhcp_tag].keys():</span><br><span class="line">            #set iface &#x3D; $dhcp_tags[$dhcp_tag][$mac]</span><br><span class="line">    host $iface.name &#123;</span><br><span class="line">        #if $iface.interface_type &#x3D;&#x3D; &quot;infiniband&quot;:</span><br><span class="line">        option dhcp-client-identifier &#x3D; $mac;</span><br><span class="line">        #else</span><br><span class="line">        hardware ethernet $mac;</span><br><span class="line">        #end if</span><br><span class="line">        #if $iface.ip_address:</span><br><span class="line">        fixed-address $iface.ip_address;</span><br><span class="line">        #end if</span><br><span class="line">        #if $iface.hostname:</span><br><span class="line">        option host-name &quot;$iface.hostname&quot;;</span><br><span class="line">        #end if</span><br><span class="line">        #if $iface.netmask:</span><br><span class="line">        option subnet-mask $iface.netmask;</span><br><span class="line">        #end if</span><br><span class="line">        #if $iface.gateway:</span><br><span class="line">        option routers $iface.gateway;</span><br><span class="line">        #end if</span><br><span class="line">        #if $iface.enable_gpxe:</span><br><span class="line">        if exists user-class and option user-class &#x3D; &quot;gPXE&quot; &#123;</span><br><span class="line">            filename &quot;http:&#x2F;&#x2F;$cobbler_server&#x2F;cblr&#x2F;svc&#x2F;op&#x2F;gpxe&#x2F;system&#x2F;$iface.owner&quot;;</span><br><span class="line">        &#125; else if exists user-class and option user-class &#x3D; &quot;iPXE&quot; &#123;</span><br><span class="line">            filename &quot;http:&#x2F;&#x2F;$cobbler_server&#x2F;cblr&#x2F;svc&#x2F;op&#x2F;gpxe&#x2F;system&#x2F;$iface.owner&quot;;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            filename &quot;undionly.kpxe&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">        #else</span><br><span class="line">        filename &quot;$iface.filename&quot;;</span><br><span class="line">        #end if</span><br><span class="line">        ## Cobbler defaults to $next_server, but some users</span><br><span class="line">        ## may like to use $iface.system.server for proxied setups</span><br><span class="line">        next-server $next_server;</span><br><span class="line">        ## next-server $iface.next_server;</span><br><span class="line">    &#125;</span><br><span class="line">        #end for</span><br><span class="line">&#125;</span><br><span class="line">#end for</span><br></pre></td></tr></table></figure>
+<p>修改完成后，执行 <code>cobbler sync</code> 命令进行同步。</p>
+<h2 id="访问-cobbler"><a href="#访问-cobbler" class="headerlink" title="访问 cobbler"></a>访问 cobbler</h2><p>此时在浏览器中输入 <code>https://&lt;your_virtual_machine_ip_address&gt;/cobbler_web</code> 访问 cobbler web，初始用户名为 <em>cobbler</em>，初始密码为 <em>cobbler</em>。 </p>
+<p><img src="/images/cobbler/access_cobbler_web.png" alt="访问 cobbler web 界面"></p>
+<p>上载启动镜像，你可以选择挂载光盘，也可以下载 ISO 到系统文件系统内，再进行挂载。（二选一）</p>
+<ul>
+<li>挂载光盘后，使用命令 <code>mount /dev/sr0 /mnt</code> 进行挂载。</li>
+<li>下载 ISO 镜像文件后，使用命令 <code>mount -or &lt;iso_file_path&gt; /mnt</code> 进行挂载。</li>
+</ul>
+<p><img src="/images/cobbler/import_image.png" alt="上传镜像"></p>
+<p>上传完成后我们可以看到如下内容：</p>
+<p><img src="/images/cobbler/distors.png" alt="发行版"></p>
+<h2 id="修改Cobbler-web登录密码"><a href="#修改Cobbler-web登录密码" class="headerlink" title="修改Cobbler web登录密码"></a>修改Cobbler web登录密码</h2><p>在终端中执行如下命令，然后输入两次密码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># htdigest &#x2F;etc&#x2F;cobbler&#x2F;users.digest &quot;Cobbler&quot; cobbler</span><br><span class="line">Changing password for user cobbler in realm Cobbler</span><br><span class="line">New password: </span><br><span class="line">Re-type new password:</span><br></pre></td></tr></table></figure>
+
+<h2 id="在新主机上安装系统"><a href="#在新主机上安装系统" class="headerlink" title="在新主机上安装系统"></a>在新主机上安装系统</h2><p>网络引导：</p>
+<p><img src="/images/cobbler/PXE.png" alt="pxe"><br><img src="/images/cobbler/boot.png" alt="网络引导"></p>
+<p>选择你想要安装的发行版本</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://blog.renkeju.com/2020/07/29/haproxy/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -978,123 +1089,6 @@
 
 <h2 id="检查"><a href="#检查" class="headerlink" title="检查"></a>检查</h2><p>查看已经配置完成的区域</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># firewall-cmd --zone&#x3D;external --list-all</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://blog.renkeju.com/2020/05/11/cobbler/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.png">
-      <meta itemprop="name" content="Keju Ren">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="时光穿梭机">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/05/11/cobbler/" class="post-title-link" itemprop="url">cobbler 部署与实践</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-05-11 14:44:00" itemprop="dateCreated datePublished" datetime="2020-05-11T14:44:00+08:00">2020-05-11</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-05 15:29:52" itemprop="dateModified" datetime="2020-11-05T15:29:52+08:00">2020-11-05</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%87%AA%E5%8A%A8%E5%8C%96/" itemprop="url" rel="index"><span itemprop="name">自动化</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="初始化环境"><a href="#初始化环境" class="headerlink" title="初始化环境"></a>初始化环境</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># yum -y install epel-release</span><br><span class="line"># yum makecache</span><br><span class="line"># yum -y update</span><br><span class="line"># systemctl --now disable postfix firewalld</span><br><span class="line"># setenforce 0</span><br><span class="line"># sed -i &#39;s@^\(SELINUX&#x3D;\).*@\1disabled@&#39; &#x2F;etc&#x2F;sysconfig&#x2F;selinux</span><br><span class="line"># sed -i &#39;s@^\(SELINUX&#x3D;\).*@\1disabled@&#39; &#x2F;etc&#x2F;selinux&#x2F;config</span><br><span class="line"># reboot</span><br></pre></td></tr></table></figure>
-
-<h2 id="安装软件"><a href="#安装软件" class="headerlink" title="安装软件"></a>安装软件</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># yum -y install cobbler cobbler-web pykickstart debmirror httpd tftp-server rsync debmirror fence-agents xinetd dhcp bind</span><br><span class="line"># systemctl --now enable cobblerd httpd rsyncd dhcpd named xinetd</span><br></pre></td></tr></table></figure>
-
-<h2 id="检查"><a href="#检查" class="headerlink" title="检查"></a>检查</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># cobbler check</span><br><span class="line">The following are potential configuration items that you may want to fix:</span><br><span class="line"></span><br><span class="line">1 : The &#39;server&#39; field in &#x2F;etc&#x2F;cobbler&#x2F;settings must be set to something other than localhost, or kickstarting features will not work.  This should be a resolvable hostname or IP for the boot server as reachable by all machines that will use it.</span><br><span class="line">2 : For PXE to be functional, the &#39;next_server&#39; field in &#x2F;etc&#x2F;cobbler&#x2F;settings must be set to something other than 127.0.0.1, and should match the IP of the boot server on the PXE network.   </span><br><span class="line">3 : SELinux is enabled. Please review the following wiki page for details on ensuring cobbler works correctly in your SELinux environment:</span><br><span class="line">    https:&#x2F;&#x2F;github.com&#x2F;cobbler&#x2F;cobbler&#x2F;wiki&#x2F;Selinux</span><br><span class="line">4 : Some network boot-loaders are missing from &#x2F;var&#x2F;lib&#x2F;cobbler&#x2F;loaders, you may run &#39;cobbler get-loaders&#39; to download them, or, if you only want to handle x86&#x2F;x86_64 netbooting, you may ensure that you have installed a *recent* version of the syslinux package installed and can ignore this message entirely.  Files in this directory, should you want to support all architectures, should include pxelinux.0, menu.c32, elilo.efi, and yaboot. The &#39;cobbler get-loaders&#39; command is the easiest way to resolve these requirements.</span><br><span class="line">5 : comment out &#39;dists&#39; on &#x2F;etc&#x2F;debmirror.conf for proper debian support</span><br><span class="line">6 : comment out &#39;arches&#39; on &#x2F;etc&#x2F;debmirror.conf for proper debian support</span><br><span class="line">7 : The default password used by the sample templates for newly installed machines (default_password_crypted in &#x2F;etc&#x2F;cobbler&#x2F;settings) is still set to &#39;cobbler&#39; and should be changed, try: &quot;openssl passwd -1 -salt &#39;random-phrase-here&#39; &#39;your-password-here&#39;&quot; to generate new one</span><br><span class="line"></span><br><span class="line">Restart cobblerd and then run &#39;cobbler sync&#39; to apply changes.</span><br></pre></td></tr></table></figure>
-
-<h2 id="解决报错"><a href="#解决报错" class="headerlink" title="解决报错"></a>解决报错</h2><ul>
-<li><p><code>/etc/cobbler/settings</code> 配置文件中 “server” 字段必须设置为 localhos t以外的 IP 地址,否则 kickstart 将不会工作。应该使用的是一个可解析启动服务器的主机名或所有服务器可以访问的 IP 地址。</p>
-</li>
-<li><p>PXE 放置在 functional 区域,在 <code>/etc/cobbler/settings</code> 配置文件中 “next_server” 字段必须设置为 127.0.0.1 以外的 IP 地址,而且应该匹配 PXE 启动服务器的 IP 网络。</p>
-</li>
-<li><p>检查是否关闭了 SELinux</p>
-</li>
-<li><p><code>/var/lib/cobbler/loaders</code> 文件缺少一些网络引导加载程序,您可以运行 “cobbler get-loaders” 下载,或者,如果您只想处理 x86/x86_64 网络引导,你可以确保您已经安装了一个最近的 recent 版本的 syslinux 包安装和完全可以忽略此消息。这个目录中的文件,你应该要支持所有架构,应包括 pxelinux.0 menu.c32 elilo.efi yaboot。执行 <code>cobbler get-loaders</code> 命令是解决这些需求最简单的方法。</p>
-</li>
-<li><p>在 <code>/etc/debmirror.conf</code> 配置文件中将 <strong>dists</strong> 所在行注释</p>
-</li>
-<li><p>在 <code>/etc/debmirror.conf</code> 配置文件中将 <strong>arches</strong> 所在行注释</p>
-</li>
-<li><p>在新安装的示例模板机器仍将使用 “cobbler” 作为默认密码(/etc/cobbler/settings default_password_crypted)最好更改一下,尝试使用: <code>openssl passwd -1 -salt ‘random-phrase-here’ ‘your-password-here’</code> 产生新的密码</p>
-</li>
-</ul>
-<h2 id="配置-cobbler"><a href="#配置-cobbler" class="headerlink" title="配置 cobbler"></a>配置 cobbler</h2><p>配置 <code>/etc/cobbler/settings</code>，让 cobbler 接管 dns、dhcp、rsync 服务，修改配置文件中的内容如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">manage_dns: 1</span><br><span class="line">manage_dhcp: 1</span><br><span class="line">manage_rsync: 1</span><br></pre></td></tr></table></figure>
-
-<p>修改 cobbler dhcpd <code>/etc/cobbler/dhcp.template</code> 配置模板文件，主要将 dhcp 地址段范围修改与你网卡相同地址段:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><span class="line"># ******************************************************************</span><br><span class="line"># Cobbler managed dhcpd.conf file</span><br><span class="line">#</span><br><span class="line"># generated from cobbler dhcp.conf template ($date)</span><br><span class="line"># Do NOT make changes to &#x2F;etc&#x2F;dhcpd.conf. Instead, make your changes</span><br><span class="line"># in &#x2F;etc&#x2F;cobbler&#x2F;dhcp.template, as &#x2F;etc&#x2F;dhcpd.conf will be</span><br><span class="line"># overwritten.</span><br><span class="line">#</span><br><span class="line">#</span><br><span class="line"># ******************************************************************                                </span><br><span class="line"></span><br><span class="line">ddns-update-style interim;</span><br><span class="line">allow booting;</span><br><span class="line">allow bootp;</span><br><span class="line">ignore client-updates;</span><br><span class="line">set vendorclass &#x3D; option vendor-class-identifier;</span><br><span class="line"></span><br><span class="line">option pxe-system-type code 93 &#x3D; unsigned integer 16;</span><br><span class="line"></span><br><span class="line">subnet 192.168.133.0 netmask 255.255.255.0 &#123;</span><br><span class="line">     option routers             192.168.133.5;</span><br><span class="line">     option domain-name-servers 192.168.133.100;</span><br><span class="line">     option subnet-mask         255.255.255.0;</span><br><span class="line">     range dynamic-bootp        192.168.133.100 192.168.133.254;</span><br><span class="line">     default-lease-time         21600;</span><br><span class="line">     max-lease-time             43200;</span><br><span class="line">     next-server                $next_server;</span><br><span class="line">     class &quot;pxeclients&quot; &#123;</span><br><span class="line">          match if substring (option vendor-class-identifier, 0, 9) &#x3D; &quot;PXEClient&quot;;</span><br><span class="line">          if option pxe-system-type &#x3D; 00:02 &#123;</span><br><span class="line">                  filename &quot;ia64&#x2F;elilo.efi&quot;;</span><br><span class="line">          &#125; else if option pxe-system-type &#x3D; 00:06 &#123;</span><br><span class="line">                  filename &quot;grub&#x2F;grub-x86.efi&quot;;</span><br><span class="line">          &#125; else if option pxe-system-type &#x3D; 00:07 &#123;</span><br><span class="line">                  filename &quot;grub&#x2F;grub-x86_64.efi&quot;;</span><br><span class="line">          &#125; else if option pxe-system-type &#x3D; 00:09 &#123;</span><br><span class="line">                  filename &quot;grub&#x2F;grub-x86_64.efi&quot;;</span><br><span class="line">          &#125; else &#123;</span><br><span class="line">                  filename &quot;pxelinux.0&quot;;</span><br><span class="line">          &#125;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#for dhcp_tag in $dhcp_tags.keys():</span><br><span class="line">    ## group could be subnet if your dhcp tags line up with your subnets</span><br><span class="line">    ## or really any valid dhcpd.conf construct ... if you only use the</span><br><span class="line">    ## default dhcp tag in cobbler, the group block can be deleted for a</span><br><span class="line">    ## flat configuration</span><br><span class="line"># group for Cobbler DHCP tag: $dhcp_tag</span><br><span class="line">group &#123;</span><br><span class="line">        #for mac in $dhcp_tags[$dhcp_tag].keys():</span><br><span class="line">            #set iface &#x3D; $dhcp_tags[$dhcp_tag][$mac]</span><br><span class="line">    host $iface.name &#123;</span><br><span class="line">        #if $iface.interface_type &#x3D;&#x3D; &quot;infiniband&quot;:</span><br><span class="line">        option dhcp-client-identifier &#x3D; $mac;</span><br><span class="line">        #else</span><br><span class="line">        hardware ethernet $mac;</span><br><span class="line">        #end if</span><br><span class="line">        #if $iface.ip_address:</span><br><span class="line">        fixed-address $iface.ip_address;</span><br><span class="line">        #end if</span><br><span class="line">        #if $iface.hostname:</span><br><span class="line">        option host-name &quot;$iface.hostname&quot;;</span><br><span class="line">        #end if</span><br><span class="line">        #if $iface.netmask:</span><br><span class="line">        option subnet-mask $iface.netmask;</span><br><span class="line">        #end if</span><br><span class="line">        #if $iface.gateway:</span><br><span class="line">        option routers $iface.gateway;</span><br><span class="line">        #end if</span><br><span class="line">        #if $iface.enable_gpxe:</span><br><span class="line">        if exists user-class and option user-class &#x3D; &quot;gPXE&quot; &#123;</span><br><span class="line">            filename &quot;http:&#x2F;&#x2F;$cobbler_server&#x2F;cblr&#x2F;svc&#x2F;op&#x2F;gpxe&#x2F;system&#x2F;$iface.owner&quot;;</span><br><span class="line">        &#125; else if exists user-class and option user-class &#x3D; &quot;iPXE&quot; &#123;</span><br><span class="line">            filename &quot;http:&#x2F;&#x2F;$cobbler_server&#x2F;cblr&#x2F;svc&#x2F;op&#x2F;gpxe&#x2F;system&#x2F;$iface.owner&quot;;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            filename &quot;undionly.kpxe&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">        #else</span><br><span class="line">        filename &quot;$iface.filename&quot;;</span><br><span class="line">        #end if</span><br><span class="line">        ## Cobbler defaults to $next_server, but some users</span><br><span class="line">        ## may like to use $iface.system.server for proxied setups</span><br><span class="line">        next-server $next_server;</span><br><span class="line">        ## next-server $iface.next_server;</span><br><span class="line">    &#125;</span><br><span class="line">        #end for</span><br><span class="line">&#125;</span><br><span class="line">#end for</span><br></pre></td></tr></table></figure>
-<p>修改完成后，执行 <code>cobbler sync</code> 命令进行同步。</p>
-<h2 id="访问-cobbler"><a href="#访问-cobbler" class="headerlink" title="访问 cobbler"></a>访问 cobbler</h2><p>此时在浏览器中输入 <code>https://&lt;your_virtual_machine_ip_address&gt;/cobbler_web</code> 访问 cobbler web，初始用户名为 <em>cobbler</em>，初始密码为 <em>cobbler</em>。 </p>
-<p><img src="/images/cobbler/access_cobbler_web.png" alt="访问 cobbler web 界面"></p>
-<p>上载启动镜像，你可以选择挂载光盘，也可以下载 ISO 到系统文件系统内，再进行挂载。</p>
-<ul>
-<li>挂载光盘后，使用命令 <code>mount /dev/sr0 /mnt</code> 进行挂载。</li>
-<li>下载 ISO 镜像文件后，使用命令 <code>mount -or &lt;iso_file_path&gt; /mnt</code> 进行挂载。</li>
-</ul>
-<p><img src="/images/cobbler/import_image.png" alt="上传镜像"></p>
-<p>上传完成后我们可以看到如下内容：</p>
-<p><img src="/images/cobbler/distors.png" alt="发行版"></p>
-<h2 id="修改Cobbler-web登录密码"><a href="#修改Cobbler-web登录密码" class="headerlink" title="修改Cobbler web登录密码"></a>修改Cobbler web登录密码</h2><p>在终端中执行如下命令，然后输入两次密码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># htdigest &#x2F;etc&#x2F;cobbler&#x2F;users.digest &quot;Cobbler&quot; cobbler</span><br><span class="line">Changing password for user cobbler in realm Cobbler</span><br><span class="line">New password: </span><br><span class="line">Re-type new password:</span><br></pre></td></tr></table></figure>
-
-<h2 id="在新主机上安装系统"><a href="#在新主机上安装系统" class="headerlink" title="在新主机上安装系统"></a>在新主机上安装系统</h2><p>网络引导：</p>
-<p><img src="/images/cobbler/PXE.png" alt="pxe"><br><img src="/images/cobbler/boot.png" alt="网络引导"></p>
-<p>选择你想要安装的发行版本</p>
-
       
     </div>
 

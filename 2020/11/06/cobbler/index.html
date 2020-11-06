@@ -23,7 +23,7 @@
   <meta name="description" content="初始化环境12345678# yum -y install epel-release# yum makecache# yum -y update# systemctl --now disable postfix firewalld# setenforce 0# sed -i &#39;s@^\(SELINUX&#x3D;\).*@\1disabled@&#39; &#x2F;etc&#x2F;sy">
 <meta property="og:type" content="article">
 <meta property="og:title" content="cobbler 部署与实践">
-<meta property="og:url" content="https://blog.renkeju.com/2020/05/11/cobbler/index.html">
+<meta property="og:url" content="https://blog.renkeju.com/2020/11/06/cobbler/index.html">
 <meta property="og:site_name" content="时光穿梭机">
 <meta property="og:description" content="初始化环境12345678# yum -y install epel-release# yum makecache# yum -y update# systemctl --now disable postfix firewalld# setenforce 0# sed -i &#39;s@^\(SELINUX&#x3D;\).*@\1disabled@&#39; &#x2F;etc&#x2F;sy">
 <meta property="og:locale" content="zh_CN">
@@ -32,15 +32,15 @@
 <meta property="og:image" content="https://blog.renkeju.com/images/cobbler/distors.png">
 <meta property="og:image" content="https://blog.renkeju.com/images/cobbler/PXE.png">
 <meta property="og:image" content="https://blog.renkeju.com/images/cobbler/boot.png">
-<meta property="article:published_time" content="2020-05-11T06:44:00.260Z">
-<meta property="article:modified_time" content="2020-11-05T07:29:52.473Z">
+<meta property="article:published_time" content="2020-11-06T06:33:03.715Z">
+<meta property="article:modified_time" content="2020-11-06T06:33:03.715Z">
 <meta property="article:author" content="Keju Ren">
 <meta property="article:tag" content="cobbler">
 <meta property="article:tag" content="PXE">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://blog.renkeju.com/images/cobbler/access_cobbler_web.png">
 
-<link rel="canonical" href="https://blog.renkeju.com/2020/05/11/cobbler/">
+<link rel="canonical" href="https://blog.renkeju.com/2020/11/06/cobbler/">
 
 
 <script id="page-configurations">
@@ -185,7 +185,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://blog.renkeju.com/2020/05/11/cobbler/">
+    <link itemprop="mainEntityOfPage" href="https://blog.renkeju.com/2020/11/06/cobbler/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.png">
@@ -208,15 +208,8 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2020-05-11 14:44:00" itemprop="dateCreated datePublished" datetime="2020-05-11T14:44:00+08:00">2020-05-11</time>
+              <time title="创建时间：2020-11-06 14:33:03" itemprop="dateCreated datePublished" datetime="2020-11-06T14:33:03+08:00">2020-11-06</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-05 15:29:52" itemprop="dateModified" datetime="2020-11-05T15:29:52+08:00">2020-11-05</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -240,7 +233,7 @@
       
         <h2 id="初始化环境"><a href="#初始化环境" class="headerlink" title="初始化环境"></a>初始化环境</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># yum -y install epel-release</span><br><span class="line"># yum makecache</span><br><span class="line"># yum -y update</span><br><span class="line"># systemctl --now disable postfix firewalld</span><br><span class="line"># setenforce 0</span><br><span class="line"># sed -i &#39;s@^\(SELINUX&#x3D;\).*@\1disabled@&#39; &#x2F;etc&#x2F;sysconfig&#x2F;selinux</span><br><span class="line"># sed -i &#39;s@^\(SELINUX&#x3D;\).*@\1disabled@&#39; &#x2F;etc&#x2F;selinux&#x2F;config</span><br><span class="line"># reboot</span><br></pre></td></tr></table></figure>
 
-<h2 id="安装软件"><a href="#安装软件" class="headerlink" title="安装软件"></a>安装软件</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># yum -y install cobbler cobbler-web pykickstart debmirror httpd tftp-server rsync debmirror fence-agents xinetd dhcp bind</span><br><span class="line"># systemctl --now enable cobblerd httpd rsyncd dhcpd named xinetd</span><br></pre></td></tr></table></figure>
+<h2 id="安装软件"><a href="#安装软件" class="headerlink" title="安装软件"></a>安装软件</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># yum -y install cobbler cobbler-web pykickstart httpd tftp-server rsync debmirror fence-agents xinetd dhcp bind</span><br><span class="line"># systemctl --now enable cobblerd httpd rsyncd dhcpd named xinetd</span><br></pre></td></tr></table></figure>
 
 <h2 id="检查"><a href="#检查" class="headerlink" title="检查"></a>检查</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># cobbler check</span><br><span class="line">The following are potential configuration items that you may want to fix:</span><br><span class="line"></span><br><span class="line">1 : The &#39;server&#39; field in &#x2F;etc&#x2F;cobbler&#x2F;settings must be set to something other than localhost, or kickstarting features will not work.  This should be a resolvable hostname or IP for the boot server as reachable by all machines that will use it.</span><br><span class="line">2 : For PXE to be functional, the &#39;next_server&#39; field in &#x2F;etc&#x2F;cobbler&#x2F;settings must be set to something other than 127.0.0.1, and should match the IP of the boot server on the PXE network.   </span><br><span class="line">3 : SELinux is enabled. Please review the following wiki page for details on ensuring cobbler works correctly in your SELinux environment:</span><br><span class="line">    https:&#x2F;&#x2F;github.com&#x2F;cobbler&#x2F;cobbler&#x2F;wiki&#x2F;Selinux</span><br><span class="line">4 : Some network boot-loaders are missing from &#x2F;var&#x2F;lib&#x2F;cobbler&#x2F;loaders, you may run &#39;cobbler get-loaders&#39; to download them, or, if you only want to handle x86&#x2F;x86_64 netbooting, you may ensure that you have installed a *recent* version of the syslinux package installed and can ignore this message entirely.  Files in this directory, should you want to support all architectures, should include pxelinux.0, menu.c32, elilo.efi, and yaboot. The &#39;cobbler get-loaders&#39; command is the easiest way to resolve these requirements.</span><br><span class="line">5 : comment out &#39;dists&#39; on &#x2F;etc&#x2F;debmirror.conf for proper debian support</span><br><span class="line">6 : comment out &#39;arches&#39; on &#x2F;etc&#x2F;debmirror.conf for proper debian support</span><br><span class="line">7 : The default password used by the sample templates for newly installed machines (default_password_crypted in &#x2F;etc&#x2F;cobbler&#x2F;settings) is still set to &#39;cobbler&#39; and should be changed, try: &quot;openssl passwd -1 -salt &#39;random-phrase-here&#39; &#39;your-password-here&#39;&quot; to generate new one</span><br><span class="line"></span><br><span class="line">Restart cobblerd and then run &#39;cobbler sync&#39; to apply changes.</span><br></pre></td></tr></table></figure>
 
@@ -257,9 +250,10 @@
 </li>
 <li><p>在 <code>/etc/debmirror.conf</code> 配置文件中将 <strong>arches</strong> 所在行注释</p>
 </li>
-<li><p>在新安装的示例模板机器仍将使用 “cobbler” 作为默认密码(/etc/cobbler/settings default_password_crypted)最好更改一下,尝试使用: <code>openssl passwd -1 -salt ‘random-phrase-here’ ‘your-password-here’</code> 产生新的密码</p>
+<li><p>在新安装的示例模板机器仍将使用 “cobbler” 作为默认密码(/etc/cobbler/settings default_password_crypted)最好更改一下,尝试使用: <code>openssl passwd -1 -salt &#39;random-phrase-here&#39; &#39;your-password-here&#39;</code> 产生新的密码，并将生成的字符串替换到<code>default_password_crypted:</code>后，字符串用双引号括起来。</p>
 </li>
 </ul>
+<p>所有报错解决完成后，再使用 <code>cobbler check</code> 检查，如果不再有错误项，使用<code>systemctl restart cobblerd</code>命令重启cobbler服务。</p>
 <h2 id="配置-cobbler"><a href="#配置-cobbler" class="headerlink" title="配置 cobbler"></a>配置 cobbler</h2><p>配置 <code>/etc/cobbler/settings</code>，让 cobbler 接管 dns、dhcp、rsync 服务，修改配置文件中的内容如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">manage_dns: 1</span><br><span class="line">manage_dhcp: 1</span><br><span class="line">manage_rsync: 1</span><br></pre></td></tr></table></figure>
 
@@ -268,7 +262,7 @@
 <p>修改完成后，执行 <code>cobbler sync</code> 命令进行同步。</p>
 <h2 id="访问-cobbler"><a href="#访问-cobbler" class="headerlink" title="访问 cobbler"></a>访问 cobbler</h2><p>此时在浏览器中输入 <code>https://&lt;your_virtual_machine_ip_address&gt;/cobbler_web</code> 访问 cobbler web，初始用户名为 <em>cobbler</em>，初始密码为 <em>cobbler</em>。 </p>
 <p><img src="/images/cobbler/access_cobbler_web.png" alt="访问 cobbler web 界面"></p>
-<p>上载启动镜像，你可以选择挂载光盘，也可以下载 ISO 到系统文件系统内，再进行挂载。</p>
+<p>上载启动镜像，你可以选择挂载光盘，也可以下载 ISO 到系统文件系统内，再进行挂载。（二选一）</p>
 <ul>
 <li>挂载光盘后，使用命令 <code>mount /dev/sr0 /mnt</code> 进行挂载。</li>
 <li>下载 ISO 镜像文件后，使用命令 <code>mount -or &lt;iso_file_path&gt; /mnt</code> 进行挂载。</li>
@@ -301,13 +295,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/05/11/Build_a_simple_container_image/" rel="prev" title="构建一个简单的容器镜像">
-      <i class="fa fa-chevron-left"></i> 构建一个简单的容器镜像
+    <a href="/2020/07/29/haproxy/" rel="prev" title="haproxy">
+      <i class="fa fa-chevron-left"></i> haproxy
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/05/21/firewalld-NAT/" rel="next" title="在 CentOS7 使用 firewalld 配置 NAT">
-      在 CentOS7 使用 firewalld 配置 NAT <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -502,7 +493,7 @@ NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
       repo        : 'blog',
       owner       : 'renkeju',
       admin       : ['renkeju'],
-      id          : 'e94b52058e06440fd73e69cb808904f0',
+      id          : '1da900c9b312dbdb19781ba3ec724db4',
         language: 'zh-CN',
       distractionFreeMode: true
     });
