@@ -175,6 +175,257 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.renkeju.com/2020/11/23/Ubuntu-ssh-service-Google-authenticator-2FA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Keju Ren">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="时光穿梭机">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/11/23/Ubuntu-ssh-service-Google-authenticator-2FA/" class="post-title-link" itemprop="url">Ubuntu ssh service Google authenticator 2FA</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-11-23 00:38:18 / 修改时间：00:48:47" itemprop="dateCreated datePublished" datetime="2020-11-23T00:38:18+08:00">2020-11-23</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>2FA(2 Factor Authentication)，双因子验证，是一种安全密码验证方式。</p>
+</blockquote>
+<h2 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h2><p>SSH（安全外壳）通常用于访问远程Linux系统。由于我们经常使用它来连接包含重要数据的计算机，因此建议添加另一个安全层。这是两因素身份验证（2FA）。</p>
+<h3 id="什么是双因素身份验证"><a href="#什么是双因素身份验证" class="headerlink" title="什么是双因素身份验证"></a>什么是双因素身份验证</h3><p>多因素身份验证是使用至少两种不同的身份验证方法来确认您的身份的方法。最常见且最容易实现的双因素身份验证示例结合使用密码短语（复杂的密码，通常由多个单词组成）和由特殊移动应用程序生成的一次性密码。</p>
+<p>我们将使用可用于Android（在<a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2" target="_blank" rel="noopener">谷歌Play商店</a>中）和iOS（在<a href="https://itunes.apple.com/us/app/google-authenticator/id388497605" target="_blank" rel="noopener">iTunes</a>中）使用的Google Authenticator应用生成身份验证代码。</p>
+<h3 id="您需要什么"><a href="#您需要什么" class="headerlink" title="您需要什么"></a>您需要什么</h3><ul>
+<li>运行Ubuntu 16.04 LTS或更高版本的计算机。</li>
+<li>运行Android或iOS的手机。</li>
+<li>配置的SSH连接。</li>
+<li>您应该了解密码被盗的风险。</li>
+<li>您不需要知道什么是两步验证，它如何工作。</li>
+</ul>
+<h2 id="安装和配置所需的包"><a href="#安装和配置所需的包" class="headerlink" title="安装和配置所需的包"></a>安装和配置所需的包</h2><h3 id="安装Google-Authenticator-PAM模块"><a href="#安装Google-Authenticator-PAM模块" class="headerlink" title="安装Google Authenticator PAM模块"></a>安装Google Authenticator PAM模块</h3><p>启动终端后，然后输入：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt install libpam-google-authenticator</span><br></pre></td></tr></table></figure>
+
+<h3 id="配置SSH"><a href="#配置SSH" class="headerlink" title="配置SSH"></a>配置SSH</h3><p>要让SSH可以使用 Google Authenticator PAM 模块，请将以下行添加到<code>/etc/pam.d/sshd</code>文件中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">auth required pam_google_authenticator.so</span><br></pre></td></tr></table></figure>
+
+<p>现在，您需要使用以下命令重新启动<code>sshd</code>守护程序：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl restart sshd.service</span><br></pre></td></tr></table></figure>
+
+<p>修改<code>/etc/ssh/sshd_config</code> - 将<code>ResponseAuthentication</code>的值从<code>no</code>更改为<code>yes</code>，因此文件的这一部分如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># Change to yes to enable challenge-response passwords (beware issues with</span><br><span class="line"># some PAM modules and threads)</span><br><span class="line">ChallengeResponseAuthentication no # CHANGE THIS TO YES</span><br><span class="line"></span><br><span class="line"># Change to no to disable tunnelled clear text passwords</span><br><span class="line">#PasswordAuthentication yes</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="配置身份验证"><a href="#配置身份验证" class="headerlink" title="配置身份验证"></a>配置身份验证</h2><p>与libpam-oath相比，Google Authenticator使双因素身份验证的配置更加容易。</p>
+<p>在终端中，运行google-authenticator命令。</p>
+<p>它将询问您一系列问题，这是建议的配置：</p>
+<ul>
+<li>Make tokens “time-base””: yes</li>
+<li>Update the <code>.google_authenticator</code> file: yes</li>
+<li>Disallow multiple uses: yes</li>
+<li>Increase the original generation time limit: no</li>
+<li>Enable rate-limiting: yes</li>
+</ul>
+<p>您可能已经注意到在此过程中出现的巨型QR码，下面是您无法使用手机时要使用的紧急刮刮码：将它们写下来并保存在安全的地方。</p>
+<p>就这样。现在，打开Google Authenticator并添加我们的密钥以使其正常工作。</p>
+<p><img src="/images/Ubuntu-ssh-service-Google-authenticator-2FA/e0c696d479c1db30e950ee83f355533e8fa7fcc6.png" alt="Google Authenticator"></p>
+<blockquote>
+<p>请勿使用未加密的服务来存储密钥，例如便笺同步服务等。如果您不想手动输入密钥，请使用QR码。</p>
+</blockquote>
+<h2 id="将secret添加到Google-Authenticator"><a href="#将secret添加到Google-Authenticator" class="headerlink" title="将secret添加到Google Authenticator"></a>将secret添加到Google Authenticator</h2><p>我们将使用谷歌Play商店中最新版本的Authenticator。在iOS上，该过程看起来应该没有太大不同。</p>
+<p><img src="/images/Ubuntu-ssh-service-Google-authenticator-2FA/a1dd743c14930e62e6b7b46f46b39cbb6c464bc9.png" alt="Google Authenticator for Android"></p>
+<h4 id="使用二维码"><a href="#使用二维码" class="headerlink" title="使用二维码"></a>使用二维码</h4><p>触摸添加图标（+），然后选择“扫描条形码”。使用手机摄像头扫描二维码。</p>
+<p><img src="/images/Ubuntu-ssh-service-Google-authenticator-2FA/2ad6b396e1d3f9481ebf629fbb73285b345a250c.png" alt="Using the QR code"></p>
+<h4 id="使用直通键"><a href="#使用直通键" class="headerlink" title="使用直通键"></a>使用直通键</h4><p>触摸添加图标（+），然后选择“输入提供的密钥”。输入一个将被识别为SSH的2FA方法的名称，然后键入<code>google-authenticator</code>命令提供的密钥。</p>
+<p><img src="/images/Ubuntu-ssh-service-Google-authenticator-2FA/3e40aa7c0705f777be94b01415da940324d78d1f.png" alt="Add a secret"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.renkeju.com/2020/11/14/lotus/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Keju Ren">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="时光穿梭机">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/11/14/lotus/" class="post-title-link" itemprop="url">lotus 部署与实践</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-11-14 19:02:28" itemprop="dateCreated datePublished" datetime="2020-11-14T19:02:28+08:00">2020-11-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="系统调试"><a href="#系统调试" class="headerlink" title="系统调试"></a>系统调试</h2><h3 id="关闭-Swap-分区"><a href="#关闭-Swap-分区" class="headerlink" title="关闭 Swap 分区"></a>关闭 Swap 分区</h3><ul>
+<li><p>临时关闭 swap 分区</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># swapoff -a</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>永久关闭swap分区，但是执行此命令之后需要重启系统！</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># sed -i.bak &#39;&#x2F; swap &#x2F; s&#x2F;^\(.*\)$&#x2F;#\1&#x2F;g&#39; &#x2F;etc&#x2F;fstab</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="定时任务"><a href="#定时任务" class="headerlink" title="定时任务"></a>定时任务</h3><ol>
+<li><p>配置定时任务所依赖的Service</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># cat &lt;&lt; EOF &gt; &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;lotus-sector-pledge.service</span><br><span class="line">[Unit]</span><br><span class="line">Description&#x3D;Lotus Sector Pledge</span><br><span class="line">After&#x3D;lotus-miner.service</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">ExecStart&#x3D;&#x2F;usr&#x2F;local&#x2F;bin&#x2F;lotus-miner sectors pledge</span><br><span class="line">Type&#x3D;oneshot</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy&#x3D;multi-user.target</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>设定定时任务</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># cat &lt;&lt; EOF &gt; &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;lotus-sector-pledge.timer</span><br><span class="line">[Unit]</span><br><span class="line">Description&#x3D;Runs lotus sector pledge</span><br><span class="line"></span><br><span class="line">[Timer]</span><br><span class="line">OnBootSec&#x3D;30m</span><br><span class="line">OnUnitActiveSec&#x3D;45m</span><br><span class="line">AccuracySec&#x3D;10m</span><br><span class="line">Unit&#x3D;lotus-sector-pledge.service</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy&#x3D;multi-user.target</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>设置开机自启动</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># systemctl daemon-reload</span><br><span class="line"># systemctl enable --now lotus-sector-pledge.timer</span><br><span class="line"># systemctl list-timer</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>定时任务建议根据<code>lotus-banch</code>测试出<code>addPiece</code>的时间，调整时间间隔，当然，后端的服务器也需要有能力消化。</p>
+<h3 id="安装显卡驱动"><a href="#安装显卡驱动" class="headerlink" title="安装显卡驱动"></a>安装显卡驱动</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># apt update </span><br><span class="line"># apt -y upgrade </span><br><span class="line"># apt -y install nvidia-driver-440 nvtop</span><br><span class="line"># systemctl set-default multi-user.target</span><br><span class="line"># reboot</span><br></pre></td></tr></table></figure>
+
+<h3 id="文件传输"><a href="#文件传输" class="headerlink" title="文件传输"></a>文件传输</h3><ul>
+<li><p>源文件</p>
+<p>  使用 python 创建简单http服务</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># cd &#x2F;var&#x2F;tmp</span><br><span class="line"># python3.8 -m http.server 8000</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>目标文件</p>
+<p>  使用 curl 获取源文件目录</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># cd &#x2F;vat&#x2F;tmp</span><br><span class="line"># wget -r -np -nH http:&#x2F;&#x2F;192.168.1.46:8000&#x2F;filecoin-proof-parameters</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="lotus-安装"><a href="#lotus-安装" class="headerlink" title="lotus 安装"></a>lotus 安装</h2><h3 id="lotus相关环境变量"><a href="#lotus相关环境变量" class="headerlink" title="lotus相关环境变量"></a>lotus相关环境变量</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"># lotus 路径：</span><br><span class="line">LOTUS_PATH</span><br><span class="line"># 例如： export LOTUS_PATH&#x3D;&#x2F;home&#x2F;user&#x2F;nvme_disk&#x2F;lotus</span><br><span class="line"></span><br><span class="line"># miner 路径： </span><br><span class="line">LOTUS_STORAGE_PATH</span><br><span class="line"># 例如： export LOTUS_STORAGE_PATH&#x3D;&#x2F;home&#x2F;user&#x2F;nvme_disk&#x2F;lotusstorage</span><br><span class="line"></span><br><span class="line"># worker 路径： </span><br><span class="line">WORKER_PATH</span><br><span class="line"># 例如： export WORKER_PATH&#x3D;&#x2F;home&#x2F;user&#x2F;nvme_disk&#x2F;lotusworker</span><br><span class="line"></span><br><span class="line"># proof 证明参数路径： </span><br><span class="line">FIL_PROOFS_PARAMETER_CACHE</span><br><span class="line"># 例如： export FIL_PROOFS_PARAMETER_CACHE&#x3D;&#x2F;home&#x2F;user&#x2F;nvme_disk&#x2F;filecoin-proof-parameters</span><br><span class="line"></span><br><span class="line"># 临时文件夹路径： </span><br><span class="line">TMPDIR</span><br><span class="line"># 例如： export TMPDIR&#x3D;&#x2F;home&#x2F;user&#x2F;nvme_disk&#x2F;tmp</span><br><span class="line"></span><br><span class="line"># 最大化内存参数</span><br><span class="line">FIL_PROOFS_MAXIMIZE_CACHING</span><br><span class="line"># 例如： export FIL_PROOFS_MAXIMIZE_CACHING&#x3D;1</span><br><span class="line"></span><br><span class="line"># Rust 日志</span><br><span class="line">RUST_LOG</span><br><span class="line"># 例如： export RUST_LOG&#x3D;Debug</span><br><span class="line"></span><br><span class="line"># GPU计算Precommit2</span><br><span class="line">FIL_PROOFS_USE_GPU_COLUMN_BUILDER</span><br><span class="line"># 例如： export FIL_PROOFS_USE_GPU_COLUMN_BUILDER&#x3D;1</span><br><span class="line"></span><br><span class="line"># 源码编译底层库</span><br><span class="line">FFI_BUILD_FROM_SOURCE</span><br><span class="line"># 例如： export FFI_BUILD_FROM_SOURCE&#x3D;1</span><br><span class="line"></span><br><span class="line"># GOLANG 代理</span><br><span class="line">GOPROXY</span><br><span class="line"># 例如： export GOPROXY&#x3D;https:&#x2F;&#x2F;goproxy.cn</span><br><span class="line"></span><br><span class="line"># 启动小扇区支持</span><br><span class="line">FIL_USE_SMALL_SECTORS</span><br><span class="line"># 例如： export FIL_USE_SMALL_SECTORS&#x3D;true</span><br><span class="line"></span><br><span class="line"># 显卡相关</span><br><span class="line">BELLMAN_CUSTOM_GPU</span><br><span class="line"># 例如： export BELLMAN_CUSTOM_GPU&#x3D;&quot;GeForce RTX 2080 Ti:4352&quot;</span><br><span class="line"></span><br><span class="line"># 下载证明参数代理：</span><br><span class="line">IPFS_GATEWAY</span><br><span class="line"># 例如： export IPFS_GATEWAY&#x3D;&quot;https:&#x2F;&#x2F;proof-parameters.s3.cn-south-1.jdcloud-oss.com&#x2F;ipfs&#x2F;&quot;</span><br><span class="line"></span><br><span class="line"># 启用 GPU 计算 Precommit2 中的部分过程</span><br><span class="line">FIL_PROOFS_USE_GPU_TREE_BUILDER</span><br><span class="line">FIL_PROOFS_USE_GPU_COLUMN_BUILDER</span><br><span class="line"># 例如：export FIL_PROOFS_USE_GPU_TREE_BUILDER&#x3D;1</span><br><span class="line"># 例如：export FIL_PROOFS_USE_GPU_COLUMN_BUILDER&#x3D;1</span><br></pre></td></tr></table></figure>
+
+<h3 id="安装依赖"><a href="#安装依赖" class="headerlink" title="安装依赖"></a>安装依赖</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># apt update </span><br><span class="line"># apt -y install mesa-opencl-icd ocl-icd-opencl-dev gcc git bzr jq pkg-config curl git g++ llvm libclang-dev</span><br><span class="line"># HTTP_PROXY&#x3D;http:&#x2F;&#x2F;192.168.1.4:8118 HTTPS_PROXY&#x3D;http:&#x2F;&#x2F;192.168.1.4:8118 curl --proto &#39;&#x3D;https&#39; --tlsv1.2 -sSf https:&#x2F;&#x2F;sh.rustup.rs | RUSTUP_INIT_SKIP_PATH_CHECK&#x3D;yes HTTP_PROXY&#x3D;http:&#x2F;&#x2F;192.168.1.4:8118 HTTPS_PROXY&#x3D;http:&#x2F;&#x2F;192.168.1.4:8118 sh</span><br><span class="line"># source $HOME&#x2F;.cargo&#x2F;env</span><br></pre></td></tr></table></figure>
+
+<h3 id="安装-Golang"><a href="#安装-Golang" class="headerlink" title="安装 Golang"></a>安装 Golang</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># wget https:&#x2F;&#x2F;golang.org&#x2F;dl&#x2F;go1.14.7.linux-amd64.tar.gz</span><br><span class="line"># tar -C &#x2F;usr&#x2F;local -zxf go1.14.7.linux-amd64.tar.gz</span><br><span class="line"># cat &lt;&lt; EOF &gt; &#x2F;etc&#x2F;profile.d&#x2F;go.sh </span><br><span class="line">export PATH&#x3D;$PATH:&#x2F;usr&#x2F;local&#x2F;go&#x2F;bin</span><br><span class="line">export GOPROXY&#x3D;https:&#x2F;&#x2F;goproxy.cn</span><br><span class="line">EOF</span><br><span class="line"># source &#x2F;etc&#x2F;profile.d&#x2F;go.sh</span><br><span class="line"># go env</span><br></pre></td></tr></table></figure>
+
+<h3 id="获取代码"><a href="#获取代码" class="headerlink" title="获取代码"></a>获取代码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># git config --global http.proxy http:&#x2F;&#x2F;192.168.1.4:8118</span><br><span class="line"># git config --global https.proxy http:&#x2F;&#x2F;192.168.1.4:8118</span><br><span class="line"># git clone https:&#x2F;&#x2F;github.com&#x2F;filecoin-project&#x2F;lotus.git</span><br></pre></td></tr></table></figure>
+
+<h3 id="切换标签"><a href="#切换标签" class="headerlink" title="切换标签"></a>切换标签</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># cd lotus</span><br><span class="line"># git branch -a             ## 查看所有分支</span><br><span class="line"># git switch  v0.5.3        ## 切换分支</span><br><span class="line"># git branch                ## 查看所在分支</span><br></pre></td></tr></table></figure>
+
+<h4 id="编译参数"><a href="#编译参数" class="headerlink" title="编译参数"></a>编译参数</h4><p>v26/v27版本代码的编译命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">env HTTP_PROXY&#x3D;http:&#x2F;&#x2F;192.168.1.4:8118 \</span><br><span class="line">HTTPS_PROXY&#x3D;http:&#x2F;&#x2F;192.168.1.4:8118 \</span><br><span class="line">RUSTFLAGS&#x3D;&quot;-C target-cpu&#x3D;native -g&quot; \</span><br><span class="line">FFI_BUILD_FROM_SOURCE&#x3D;1 \</span><br><span class="line">make clean all \</span><br><span class="line">&amp;&amp; make install</span><br></pre></td></tr></table></figure>
+
+<h3 id="将Lotus与systemd一起使用"><a href="#将Lotus与systemd一起使用" class="headerlink" title="将Lotus与systemd一起使用"></a>将Lotus与systemd一起使用</h3><h4 id="lotus-daemon-systemd"><a href="#lotus-daemon-systemd" class="headerlink" title="lotus-daemon systemd"></a>lotus-daemon systemd</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"># cat &lt;&lt; EOF &gt; &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;lotus-daemon.service</span><br><span class="line">[Unit]</span><br><span class="line">Description&#x3D;Lotus Daemon</span><br><span class="line">After&#x3D;network-online.target</span><br><span class="line">Requires&#x3D;network-online.target</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">Environment&#x3D;GOLOG_FILE&#x3D;&quot;&#x2F;var&#x2F;log&#x2F;lotus&#x2F;daemon.log&quot;</span><br><span class="line">Environment&#x3D;GOLOG_LOG_FMT&#x3D;&quot;json&quot;</span><br><span class="line">ExecStart&#x3D;&#x2F;usr&#x2F;local&#x2F;bin&#x2F;lotus daemon</span><br><span class="line">Restart&#x3D;always</span><br><span class="line">RestartSec&#x3D;10</span><br><span class="line"></span><br><span class="line">LimitNOFILE&#x3D;infinity</span><br><span class="line">LimitNPROC&#x3D;infinity</span><br><span class="line">LimitCORE&#x3D;infinity</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy&#x3D;multi-user.target</span><br><span class="line">EOF</span><br><span class="line"># systemctl daemon-reload</span><br><span class="line"># systemctl enable --now lotus-daemon</span><br></pre></td></tr></table></figure>
+
+<h4 id="lotus-miner-systemd"><a href="#lotus-miner-systemd" class="headerlink" title="lotus-miner systemd"></a>lotus-miner systemd</h4><p>如果你拆开了lotus-daemon和lotus-miner，就先把 systemctl 写入，随后lotus-miner配置文件配置完成后再使用<code>systectl start lotus-miner</code>启动。</p>
+<blockquote>
+<p>如果没有使用 ceph rbdmap 服务挂载网络磁盘，可以把<code>After=rbdmap.service</code>注释掉。不注释掉，lotus-miner 服务不能启动成功。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"># cat &lt;&lt; EOF &gt; &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;lotus-miner.service</span><br><span class="line">[Unit]</span><br><span class="line">Description&#x3D;Lotus Miner</span><br><span class="line">After&#x3D;network.target</span><br><span class="line">After&#x3D;rbdmap.service</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">ExecStart&#x3D;&#x2F;usr&#x2F;local&#x2F;bin&#x2F;lotus-miner run</span><br><span class="line">Environment&#x3D;GOLOG_FILE&#x3D;&quot;&#x2F;var&#x2F;log&#x2F;lotus&#x2F;miner.log&quot;</span><br><span class="line">Environment&#x3D;GOLOG_LOG_FMT&#x3D;&quot;json&quot;</span><br><span class="line">Environment&#x3D;RUST_LOG&#x3D;Debug</span><br><span class="line">Environment&#x3D;RUST_BACKTRACE&#x3D;full</span><br><span class="line">Environment&#x3D;FIL_PROOFS_MAXIMIZE_CACHING&#x3D;1</span><br><span class="line">Environment&#x3D;FIL_PROOFS_USE_GPU_COLUMN_BUILDER&#x3D;1</span><br><span class="line">Environment&#x3D;FIL_PROOFS_USE_GPU_TREE_BUILDER&#x3D;1</span><br><span class="line">Environment&#x3D;FIL_PROOFS_SDR_PARENTS_CACHE_SIZE&#x3D;1073741824</span><br><span class="line"></span><br><span class="line">LimitNOFILE&#x3D;infinity</span><br><span class="line">LimitNPROC&#x3D;infinity</span><br><span class="line">LimitCORE&#x3D;infinity</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy&#x3D;multi-user.target</span><br><span class="line">EOF</span><br><span class="line"># systemctl daemon-reload</span><br><span class="line"># systemctl enable lotus-miner</span><br><span class="line"># mkdir ~&#x2F;.lotus &#x2F;var&#x2F;log&#x2F;lotus</span><br><span class="line"># echo &lt;API&gt; &gt; ~&#x2F;.lotus&#x2F;api</span><br><span class="line"># echo &lt;TOKEN&gt; &gt; ~&#x2F;.lotus&#x2F;token</span><br></pre></td></tr></table></figure>
+
+<h4 id="lotus-worker-systemd"><a href="#lotus-worker-systemd" class="headerlink" title="lotus-worker systemd"></a>lotus-worker systemd</h4><p>lotus-worker 和 lotus-miner 肯定是拆开的，先把 systemctl 写入。另外根据你的需要分配lotus-worker所需要进行的工作。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"># cat &lt;&lt; EOF &gt; &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;lotus-worker.service</span><br><span class="line">[Unit]</span><br><span class="line">Description&#x3D;Lotus Storage Seal Worker</span><br><span class="line">After&#x3D;network.target</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">ExecStart&#x3D;lotus-worker run --listen&#x3D;192.168.1.46:10001 --precommit1&#x3D;false --precommit2&#x3D;false --commit&#x3D;true --addpiece&#x3D;false --unseal&#x3D;false</span><br><span class="line">Environment&#x3D;GOLOG_FILE&#x3D;&quot;&#x2F;var&#x2F;log&#x2F;lotus&#x2F;worker.log&quot;</span><br><span class="line">Environment&#x3D;GOLOG_LOG_FMT&#x3D;&quot;json&quot;</span><br><span class="line">Environment&#x3D;RUST_LOG&#x3D;Debug</span><br><span class="line">Environment&#x3D;RUST_BACKTRACE&#x3D;full</span><br><span class="line">Environment&#x3D;FIL_PROOFS_MAXIMIZE_CACHING&#x3D;1</span><br><span class="line">Environment&#x3D;FIL_PROOFS_USE_GPU_COLUMN_BUILDER&#x3D;1</span><br><span class="line">Environment&#x3D;FIL_PROOFS_USE_GPU_TREE_BUILDER&#x3D;1</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy&#x3D;multiuser.target</span><br><span class="line">EOF</span><br><span class="line"># systemctl daemon-reload</span><br><span class="line"># systemctl enable lotus-worker</span><br><span class="line"># mkdir ~&#x2F;.lotusminer &#x2F;var&#x2F;log&#x2F;lotus</span><br><span class="line"># echo &lt;API&gt; &gt; ~&#x2F;.lotusminer&#x2F;api</span><br><span class="line"># echo &lt;TOKEN&gt; &gt; ~&#x2F;.lotusminer&#x2F;token</span><br><span class="line"># systemctl start lotus-worker</span><br></pre></td></tr></table></figure>
+
+<h4 id="跟踪服务的日志"><a href="#跟踪服务的日志" class="headerlink" title="跟踪服务的日志"></a>跟踪服务的日志</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo journalctl -u lotus-daemon -f</span><br></pre></td></tr></table></figure>
+
+<h4 id="以相反的顺序查看日志"><a href="#以相反的顺序查看日志" class="headerlink" title="以相反的顺序查看日志"></a>以相反的顺序查看日志</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo journalctl -u lotus-daemon -r</span><br></pre></td></tr></table></figure>
+
+<h4 id="日志切割"><a href="#日志切割" class="headerlink" title="日志切割"></a>日志切割</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># cat &lt;&lt; EOF &gt; &#x2F;etc&#x2F;logrotate.d&#x2F;lotus</span><br><span class="line">&#x2F;var&#x2F;log&#x2F;lotus&#x2F;*.log &#123;</span><br><span class="line">    create 0644 root root</span><br><span class="line">    daily</span><br><span class="line">    rotate 31</span><br><span class="line">    missingok</span><br><span class="line">    copytruncate</span><br><span class="line">    ifempty</span><br><span class="line">    compress</span><br><span class="line">    noolddir</span><br><span class="line">    dateext</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用远程-daemon"><a href="#使用远程-daemon" class="headerlink" title="使用远程 daemon"></a>使用远程 daemon</h2><p>假设daemon在 <code>192.168.1.100</code> 机器上，miner在 <code>192.168.1.101</code> 机器上：</p>
+<ol>
+<li>修改远程 daemon (192.168.1.100)上 <code>~/.lotus/config.toml</code> 中的 <code>ListenAddress</code> 为：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># Default config:</span><br><span class="line">[API]</span><br><span class="line">ListenAddress &#x3D; &quot;&#x2F;ip4&#x2F;192.168.1.100&#x2F;tcp&#x2F;1234&#x2F;http&quot;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>将远程 daemon (192.168.1.100) 上 <code>~/.lotus</code> 目录下的 <code>api</code> 和 <code>token</code> 拷贝到 miner 机器(192.168.1.101)的 <code>~/.lotus</code> 目录下，miner主机不用启动lotus-daemon。</li>
+<li>重启miner机器的 miner 服务即可。</li>
+</ol>
+<h2 id="集群配置"><a href="#集群配置" class="headerlink" title="集群配置"></a>集群配置</h2><h3 id="修改-miner"><a href="#修改-miner" class="headerlink" title="修改 miner"></a>修改 miner</h3><p>修改 miner <code>~/.lotusstorage/config.toml</code> 里面的 <code>ListenAddress</code> 和 <code>RemoteListenAddress</code> ，把这两个变量中的地址都改为 miner 本机的地址:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[API]</span><br><span class="line">ListenAddress &#x3D; &quot;&#x2F;ip4&#x2F;192.168.1.100&#x2F;tcp&#x2F;2345&#x2F;http&quot;</span><br><span class="line">RemoteListenAddress &#x3D; &quot;192.168.1.100:2345&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="配置-worker"><a href="#配置-worker" class="headerlink" title="配置 worker"></a>配置 worker</h3><p>在 <strong>启动了 miner 之后</strong>，复制 miner 的 <code>~/.lotusstorage</code> 目录中的 <code>token</code> 和 <code>api</code> 到 worker 中的 <code>~/.lotusstorage</code> （worker 中没有这个目录就手动创建一个），然后启动 worker 即可。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://blog.renkeju.com/2020/11/06/cobbler/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -689,158 +940,6 @@
 
 
 <h2 id="RabbitMQ-配置实例"><a href="#RabbitMQ-配置实例" class="headerlink" title="RabbitMQ 配置实例"></a>RabbitMQ 配置实例</h2><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">global</span><br><span class="line">	log 127.0.0.1 local0 info</span><br><span class="line">	maxconn 4096</span><br><span class="line">	chroot /var/lib/haproxy</span><br><span class="line">	user haproxy</span><br><span class="line">	group haproxy</span><br><span class="line">	daemon</span><br><span class="line">	pidfile /var/run/haproxy.pid</span><br><span class="line">	</span><br><span class="line">defaults </span><br><span class="line">	log global</span><br><span class="line">	mode tcp</span><br><span class="line">	option tcplog</span><br><span class="line">	option dontlognull</span><br><span class="line">	retries	3</span><br><span class="line">	maxconn 2000</span><br><span class="line">	timeout connect 5s</span><br><span class="line">	timeout client 120s</span><br><span class="line">	timeout server 120s</span><br><span class="line">	</span><br><span class="line">listen rabbitmq_cluster :5671</span><br><span class="line">	mode tcp</span><br><span class="line">	balance roundrobin</span><br><span class="line">	server rmq_node1 172.16.0.9:5672 check inter 5000 rise 2 fall 3 weight 1</span><br><span class="line">	server rmq_node2 172.16.0.8:5672 check inter 5000 rise 2 fall 3 weight 1</span><br><span class="line">	server rmq_node1 172.16.0.6:5672 check inter 5000 rise 2 fall 3 weight 1</span><br><span class="line">	</span><br><span class="line">listen monitor :8100</span><br><span class="line">	mode http</span><br><span class="line">	option httplog</span><br><span class="line">	stats enable</span><br><span class="line">	stats uri /stats</span><br><span class="line">	stats refresh 5s</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://blog.renkeju.com/2020/07/10/lotus/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.png">
-      <meta itemprop="name" content="Keju Ren">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="时光穿梭机">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/10/lotus/" class="post-title-link" itemprop="url">lotus 部署与实践</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-07-10 19:34:33" itemprop="dateCreated datePublished" datetime="2020-07-10T19:34:33+08:00">2020-07-10</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 11:56:42" itemprop="dateModified" datetime="2020-10-14T11:56:42+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="系统调试"><a href="#系统调试" class="headerlink" title="系统调试"></a>系统调试</h2><h3 id="关闭-Swap-分区"><a href="#关闭-Swap-分区" class="headerlink" title="关闭 Swap 分区"></a>关闭 Swap 分区</h3><ul>
-<li><p>临时关闭 swap 分区</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># swapoff -a</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>永久关闭swap分区，但是执行此命令之后需要重启系统！</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># sed -i.bak &#39;&#x2F; swap &#x2F; s&#x2F;^\(.*\)$&#x2F;#\1&#x2F;g&#39; &#x2F;etc&#x2F;fstab</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h3 id="定时任务"><a href="#定时任务" class="headerlink" title="定时任务"></a>定时任务</h3><ol>
-<li><p>配置定时任务所依赖的Service</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># cat &lt;&lt; EOF &gt; &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;lotus-sector-pledge.service</span><br><span class="line">[Unit]</span><br><span class="line">Description&#x3D;Lotus Sector Pledge</span><br><span class="line">After&#x3D;lotus-miner.service</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">ExecStart&#x3D;&#x2F;usr&#x2F;local&#x2F;bin&#x2F;lotus-miner sectors pledge</span><br><span class="line">Type&#x3D;oneshot</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy&#x3D;multi-user.target</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>设定定时任务</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># cat &lt;&lt; EOF &gt; &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;lotus-sector-pledge.timer</span><br><span class="line">[Unit]</span><br><span class="line">Description&#x3D;Runs lotus sector pledge</span><br><span class="line"></span><br><span class="line">[Timer]</span><br><span class="line">OnBootSec&#x3D;30m</span><br><span class="line">OnUnitActiveSec&#x3D;45m</span><br><span class="line">AccuracySec&#x3D;10m</span><br><span class="line">Unit&#x3D;lotus-sector-pledge.service</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy&#x3D;multi-user.target</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>设置开机自启动</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># systemctl daemon-reload</span><br><span class="line"># systemctl enable --now lotus-sector-pledge.timer</span><br><span class="line"># systemctl list-timer</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<p>定时任务建议根据<code>lotus-banch</code>测试出<code>addPiece</code>的时间，调整时间间隔，当然，后端的服务器也需要有能力消化。</p>
-<h3 id="安装显卡驱动"><a href="#安装显卡驱动" class="headerlink" title="安装显卡驱动"></a>安装显卡驱动</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># apt update </span><br><span class="line"># apt -y upgrade </span><br><span class="line"># apt -y install nvidia-driver-440 nvtop</span><br><span class="line"># systemctl set-default multi-user.target</span><br><span class="line"># reboot</span><br></pre></td></tr></table></figure>
-
-<h3 id="文件传输"><a href="#文件传输" class="headerlink" title="文件传输"></a>文件传输</h3><ul>
-<li><p>源文件</p>
-<p>  使用 python 创建简单http服务</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># cd &#x2F;var&#x2F;tmp</span><br><span class="line"># python3.8 -m http.server 8000</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>目标文件</p>
-<p>  使用 curl 获取源文件目录</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># cd &#x2F;vat&#x2F;tmp</span><br><span class="line"># wget -r -np -nH http:&#x2F;&#x2F;192.168.1.46:8000&#x2F;filecoin-proof-parameters</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h2 id="lotus-安装"><a href="#lotus-安装" class="headerlink" title="lotus 安装"></a>lotus 安装</h2><h3 id="lotus相关环境变量"><a href="#lotus相关环境变量" class="headerlink" title="lotus相关环境变量"></a>lotus相关环境变量</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"># lotus 路径：</span><br><span class="line">LOTUS_PATH</span><br><span class="line"># 例如： export LOTUS_PATH&#x3D;&#x2F;home&#x2F;user&#x2F;nvme_disk&#x2F;lotus</span><br><span class="line"></span><br><span class="line"># miner 路径： </span><br><span class="line">LOTUS_STORAGE_PATH</span><br><span class="line"># 例如： export LOTUS_STORAGE_PATH&#x3D;&#x2F;home&#x2F;user&#x2F;nvme_disk&#x2F;lotusstorage</span><br><span class="line"></span><br><span class="line"># worker 路径： </span><br><span class="line">WORKER_PATH</span><br><span class="line"># 例如： export WORKER_PATH&#x3D;&#x2F;home&#x2F;user&#x2F;nvme_disk&#x2F;lotusworker</span><br><span class="line"></span><br><span class="line"># proof 证明参数路径： </span><br><span class="line">FIL_PROOFS_PARAMETER_CACHE</span><br><span class="line"># 例如： export FIL_PROOFS_PARAMETER_CACHE&#x3D;&#x2F;home&#x2F;user&#x2F;nvme_disk&#x2F;filecoin-proof-parameters</span><br><span class="line"></span><br><span class="line"># 临时文件夹路径： </span><br><span class="line">TMPDIR</span><br><span class="line"># 例如： export TMPDIR&#x3D;&#x2F;home&#x2F;user&#x2F;nvme_disk&#x2F;tmp</span><br><span class="line"></span><br><span class="line"># 最大化内存参数</span><br><span class="line">FIL_PROOFS_MAXIMIZE_CACHING</span><br><span class="line"># 例如： export FIL_PROOFS_MAXIMIZE_CACHING&#x3D;1</span><br><span class="line"></span><br><span class="line"># Rust 日志</span><br><span class="line">RUST_LOG</span><br><span class="line"># 例如： export RUST_LOG&#x3D;Debug</span><br><span class="line"></span><br><span class="line"># GPU计算Precommit2</span><br><span class="line">FIL_PROOFS_USE_GPU_COLUMN_BUILDER</span><br><span class="line"># 例如： export FIL_PROOFS_USE_GPU_COLUMN_BUILDER&#x3D;1</span><br><span class="line"></span><br><span class="line"># 源码编译底层库</span><br><span class="line">FFI_BUILD_FROM_SOURCE</span><br><span class="line"># 例如： export FFI_BUILD_FROM_SOURCE&#x3D;1</span><br><span class="line"></span><br><span class="line"># GOLANG 代理</span><br><span class="line">GOPROXY</span><br><span class="line"># 例如： export GOPROXY&#x3D;https:&#x2F;&#x2F;goproxy.cn</span><br><span class="line"></span><br><span class="line"># 启动小扇区支持</span><br><span class="line">FIL_USE_SMALL_SECTORS</span><br><span class="line"># 例如： export FIL_USE_SMALL_SECTORS&#x3D;true</span><br><span class="line"></span><br><span class="line"># 显卡相关</span><br><span class="line">BELLMAN_CUSTOM_GPU</span><br><span class="line"># 例如： export BELLMAN_CUSTOM_GPU&#x3D;&quot;GeForce RTX 2080 Ti:4352&quot;</span><br><span class="line"></span><br><span class="line"># 下载证明参数代理：</span><br><span class="line">IPFS_GATEWAY</span><br><span class="line"># 例如： export IPFS_GATEWAY&#x3D;&quot;https:&#x2F;&#x2F;proof-parameters.s3.cn-south-1.jdcloud-oss.com&#x2F;ipfs&#x2F;&quot;</span><br><span class="line"></span><br><span class="line"># 启用 GPU 计算 Precommit2 中的部分过程</span><br><span class="line">FIL_PROOFS_USE_GPU_TREE_BUILDER</span><br><span class="line">FIL_PROOFS_USE_GPU_COLUMN_BUILDER</span><br><span class="line"># 例如：export FIL_PROOFS_USE_GPU_TREE_BUILDER&#x3D;1</span><br><span class="line"># 例如：export FIL_PROOFS_USE_GPU_COLUMN_BUILDER&#x3D;1</span><br></pre></td></tr></table></figure>
-
-<h3 id="安装依赖"><a href="#安装依赖" class="headerlink" title="安装依赖"></a>安装依赖</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># apt update </span><br><span class="line"># apt -y install mesa-opencl-icd ocl-icd-opencl-dev gcc git bzr jq pkg-config curl git g++ llvm libclang-dev</span><br><span class="line"># HTTP_PROXY&#x3D;http:&#x2F;&#x2F;192.168.1.4:8118 HTTPS_PROXY&#x3D;http:&#x2F;&#x2F;192.168.1.4:8118 curl --proto &#39;&#x3D;https&#39; --tlsv1.2 -sSf https:&#x2F;&#x2F;sh.rustup.rs | RUSTUP_INIT_SKIP_PATH_CHECK&#x3D;yes HTTP_PROXY&#x3D;http:&#x2F;&#x2F;192.168.1.4:8118 HTTPS_PROXY&#x3D;http:&#x2F;&#x2F;192.168.1.4:8118 sh</span><br><span class="line"># source $HOME&#x2F;.cargo&#x2F;env</span><br></pre></td></tr></table></figure>
-
-<h3 id="安装-Golang"><a href="#安装-Golang" class="headerlink" title="安装 Golang"></a>安装 Golang</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># wget https:&#x2F;&#x2F;golang.org&#x2F;dl&#x2F;go1.14.7.linux-amd64.tar.gz</span><br><span class="line"># tar -C &#x2F;usr&#x2F;local -zxf go1.14.7.linux-amd64.tar.gz</span><br><span class="line"># cat &lt;&lt; EOF &gt; &#x2F;etc&#x2F;profile.d&#x2F;go.sh </span><br><span class="line">export PATH&#x3D;$PATH:&#x2F;usr&#x2F;local&#x2F;go&#x2F;bin</span><br><span class="line">export GOPROXY&#x3D;https:&#x2F;&#x2F;goproxy.cn</span><br><span class="line">EOF</span><br><span class="line"># source &#x2F;etc&#x2F;profile.d&#x2F;go.sh</span><br><span class="line"># go env</span><br></pre></td></tr></table></figure>
-
-<h3 id="获取代码"><a href="#获取代码" class="headerlink" title="获取代码"></a>获取代码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># git config --global http.proxy http:&#x2F;&#x2F;192.168.1.4:8118</span><br><span class="line"># git config --global https.proxy http:&#x2F;&#x2F;192.168.1.4:8118</span><br><span class="line"># git clone https:&#x2F;&#x2F;github.com&#x2F;filecoin-project&#x2F;lotus.git</span><br></pre></td></tr></table></figure>
-
-<h3 id="切换标签"><a href="#切换标签" class="headerlink" title="切换标签"></a>切换标签</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># cd lotus</span><br><span class="line"># git tag                   ## 查看所有标签</span><br><span class="line"># git checkout v0.5.3       ## 切换标签</span><br><span class="line"># git branch                ## 查看所在标签</span><br></pre></td></tr></table></figure>
-
-<h4 id="编译参数"><a href="#编译参数" class="headerlink" title="编译参数"></a>编译参数</h4><p>v26/v27版本代码的编译命令：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">env HTTP_PROXY&#x3D;http:&#x2F;&#x2F;192.168.1.4:8118 \</span><br><span class="line">HTTPS_PROXY&#x3D;http:&#x2F;&#x2F;192.168.1.4:8118 \</span><br><span class="line">RUSTFLAGS&#x3D;&quot;-C target-cpu&#x3D;native -g&quot; \</span><br><span class="line">FFI_BUILD_FROM_SOURCE&#x3D;1 \</span><br><span class="line">make clean all \</span><br><span class="line">&amp;&amp; make install</span><br></pre></td></tr></table></figure>
-
-<h3 id="将Lotus与systemd一起使用"><a href="#将Lotus与systemd一起使用" class="headerlink" title="将Lotus与systemd一起使用"></a>将Lotus与systemd一起使用</h3><h4 id="lotus-daemon-systemd"><a href="#lotus-daemon-systemd" class="headerlink" title="lotus-daemon systemd"></a>lotus-daemon systemd</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"># cat &lt;&lt; EOF &gt; &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;lotus-daemon.service</span><br><span class="line">[Unit]</span><br><span class="line">Description&#x3D;Lotus Daemon</span><br><span class="line">After&#x3D;network-online.target</span><br><span class="line">Requires&#x3D;network-online.target</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">Environment&#x3D;GOLOG_FILE&#x3D;&quot;&#x2F;var&#x2F;log&#x2F;lotus&#x2F;daemon.log&quot;</span><br><span class="line">Environment&#x3D;GOLOG_LOG_FMT&#x3D;&quot;json&quot;</span><br><span class="line">ExecStart&#x3D;&#x2F;usr&#x2F;local&#x2F;bin&#x2F;lotus daemon</span><br><span class="line">Restart&#x3D;always</span><br><span class="line">RestartSec&#x3D;10</span><br><span class="line"></span><br><span class="line">LimitNOFILE&#x3D;infinity</span><br><span class="line">LimitNPROC&#x3D;infinity</span><br><span class="line">LimitCORE&#x3D;infinity</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy&#x3D;multi-user.target</span><br><span class="line">EOF</span><br><span class="line"># systemctl daemon-reload</span><br><span class="line"># systemctl enable --now lotus-daemon</span><br></pre></td></tr></table></figure>
-
-<h4 id="lotus-miner-systemd"><a href="#lotus-miner-systemd" class="headerlink" title="lotus-miner systemd"></a>lotus-miner systemd</h4><p>如果你拆开了lotus-daemon和lotus-miner，就先把 systemctl 写入，随后lotus-miner配置文件配置完成后再使用<code>systectl start lotus-miner</code>启动。</p>
-<blockquote>
-<p>如果没有使用 ceph rbdmap 服务挂载网络磁盘，可以把<code>After=rbdmap.service</code>注释掉。不注释掉，lotus-miner 服务不能启动成功。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"># cat &lt;&lt; EOF &gt; &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;lotus-miner.service</span><br><span class="line">[Unit]</span><br><span class="line">Description&#x3D;Lotus Miner</span><br><span class="line">After&#x3D;network.target</span><br><span class="line">After&#x3D;rbdmap.service</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">ExecStart&#x3D;&#x2F;usr&#x2F;local&#x2F;bin&#x2F;lotus-miner run</span><br><span class="line">Environment&#x3D;GOLOG_FILE&#x3D;&quot;&#x2F;var&#x2F;log&#x2F;lotus&#x2F;miner.log&quot;</span><br><span class="line">Environment&#x3D;GOLOG_LOG_FMT&#x3D;&quot;json&quot;</span><br><span class="line">Environment&#x3D;RUST_LOG&#x3D;Debug</span><br><span class="line">Environment&#x3D;RUST_BACKTRACE&#x3D;full</span><br><span class="line">Environment&#x3D;FIL_PROOFS_MAXIMIZE_CACHING&#x3D;1</span><br><span class="line">Environment&#x3D;FIL_PROOFS_USE_GPU_COLUMN_BUILDER&#x3D;1</span><br><span class="line">Environment&#x3D;FIL_PROOFS_USE_GPU_TREE_BUILDER&#x3D;1</span><br><span class="line">Environment&#x3D;FIL_PROOFS_SDR_PARENTS_CACHE_SIZE&#x3D;1073741824</span><br><span class="line"></span><br><span class="line">LimitNOFILE&#x3D;infinity</span><br><span class="line">LimitNPROC&#x3D;infinity</span><br><span class="line">LimitCORE&#x3D;infinity</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy&#x3D;multi-user.target</span><br><span class="line">EOF</span><br><span class="line"># systemctl daemon-reload</span><br><span class="line"># systemctl enable lotus-miner</span><br><span class="line"># mkdir ~&#x2F;.lotus &#x2F;var&#x2F;log&#x2F;lotus</span><br><span class="line"># echo &lt;API&gt; &gt; ~&#x2F;.lotus&#x2F;api</span><br><span class="line"># echo &lt;TOKEN&gt; &gt; ~&#x2F;.lotus&#x2F;token</span><br></pre></td></tr></table></figure>
-
-<h4 id="lotus-worker-systemd"><a href="#lotus-worker-systemd" class="headerlink" title="lotus-worker systemd"></a>lotus-worker systemd</h4><p>lotus-worker 和 lotus-miner 肯定是拆开的，先把 systemctl 写入。另外根据你的需要分配lotus-worker所需要进行的工作。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"># cat &lt;&lt; EOF &gt; &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;lotus-worker.service</span><br><span class="line">[Unit]</span><br><span class="line">Description&#x3D;Lotus Storage Seal Worker</span><br><span class="line">After&#x3D;network.target</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">ExecStart&#x3D;lotus-worker run --listen&#x3D;192.168.1.46:10001 --precommit1&#x3D;false --precommit2&#x3D;false --commit&#x3D;true --addpiece&#x3D;false --unseal&#x3D;false</span><br><span class="line">Environment&#x3D;GOLOG_FILE&#x3D;&quot;&#x2F;var&#x2F;log&#x2F;lotus&#x2F;worker.log&quot;</span><br><span class="line">Environment&#x3D;GOLOG_LOG_FMT&#x3D;&quot;json&quot;</span><br><span class="line">Environment&#x3D;RUST_LOG&#x3D;Debug</span><br><span class="line">Environment&#x3D;RUST_BACKTRACE&#x3D;full</span><br><span class="line">Environment&#x3D;FIL_PROOFS_MAXIMIZE_CACHING&#x3D;1</span><br><span class="line">Environment&#x3D;FIL_PROOFS_USE_GPU_COLUMN_BUILDER&#x3D;1</span><br><span class="line">Environment&#x3D;FIL_PROOFS_USE_GPU_TREE_BUILDER&#x3D;1</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy&#x3D;multiuser.target</span><br><span class="line">EOF</span><br><span class="line"># systemctl daemon-reload</span><br><span class="line"># systemctl enable lotus-worker</span><br><span class="line"># mkdir ~&#x2F;.lotusminer &#x2F;var&#x2F;log&#x2F;lotus</span><br><span class="line"># echo &lt;API&gt; &gt; ~&#x2F;.lotusminer&#x2F;api</span><br><span class="line"># echo &lt;TOKEN&gt; &gt; ~&#x2F;.lotusminer&#x2F;token</span><br><span class="line"># systemctl start lotus-worker</span><br></pre></td></tr></table></figure>
-
-<h4 id="跟踪服务的日志"><a href="#跟踪服务的日志" class="headerlink" title="跟踪服务的日志"></a>跟踪服务的日志</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo journalctl -u lotus-daemon -f</span><br></pre></td></tr></table></figure>
-
-<h4 id="以相反的顺序查看日志"><a href="#以相反的顺序查看日志" class="headerlink" title="以相反的顺序查看日志"></a>以相反的顺序查看日志</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo journalctl -u lotus-daemon -r</span><br></pre></td></tr></table></figure>
-
-<h4 id="日志切割"><a href="#日志切割" class="headerlink" title="日志切割"></a>日志切割</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># cat &lt;&lt; EOF &gt; &#x2F;etc&#x2F;logrotate.d&#x2F;lotus</span><br><span class="line">&#x2F;var&#x2F;log&#x2F;lotus&#x2F;*.log &#123;</span><br><span class="line">    create 0644 root root</span><br><span class="line">    daily</span><br><span class="line">    rotate 31</span><br><span class="line">    missingok</span><br><span class="line">    copytruncate</span><br><span class="line">    ifempty</span><br><span class="line">    compress</span><br><span class="line">    noolddir</span><br><span class="line">    dateext</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
-
-<h2 id="使用远程-daemon"><a href="#使用远程-daemon" class="headerlink" title="使用远程 daemon"></a>使用远程 daemon</h2><p>假设daemon在 <code>192.168.1.100</code> 机器上，miner在 <code>192.168.1.101</code> 机器上：</p>
-<ol>
-<li>修改远程 daemon (192.168.1.100)上 <code>~/.lotus/config.toml</code> 中的 <code>ListenAddress</code> 为：</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># Default config:</span><br><span class="line">[API]</span><br><span class="line">ListenAddress &#x3D; &quot;&#x2F;ip4&#x2F;192.168.1.100&#x2F;tcp&#x2F;1234&#x2F;http&quot;</span><br></pre></td></tr></table></figure>
-
-<ol>
-<li>将远程 daemon (192.168.1.100) 上 <code>~/.lotus</code> 目录下的 <code>api</code> 和 <code>token</code> 拷贝到 miner 机器(192.168.1.101)的 <code>~/.lotus</code> 目录下，miner主机不用启动lotus-daemon。</li>
-<li>重启miner机器的 miner 服务即可。</li>
-</ol>
-<h2 id="集群配置"><a href="#集群配置" class="headerlink" title="集群配置"></a>集群配置</h2><h3 id="修改-miner"><a href="#修改-miner" class="headerlink" title="修改 miner"></a>修改 miner</h3><p>修改 miner <code>~/.lotusstorage/config.toml</code> 里面的 <code>ListenAddress</code> 和 <code>RemoteListenAddress</code> ，把这两个变量中的地址都改为 miner 本机的地址:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[API]</span><br><span class="line">ListenAddress &#x3D; &quot;&#x2F;ip4&#x2F;192.168.1.100&#x2F;tcp&#x2F;2345&#x2F;http&quot;</span><br><span class="line">RemoteListenAddress &#x3D; &quot;192.168.1.100:2345&quot;</span><br></pre></td></tr></table></figure>
-
-<h3 id="配置-worker"><a href="#配置-worker" class="headerlink" title="配置 worker"></a>配置 worker</h3><p>在 <strong>启动了 miner 之后</strong>，复制 miner 的 <code>~/.lotusstorage</code> 目录中的 <code>token</code> 和 <code>api</code> 到 worker 中的 <code>~/.lotusstorage</code> （worker 中没有这个目录就手动创建一个），然后启动 worker 即可。</p>
-
       
     </div>
 
@@ -1476,72 +1575,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://blog.renkeju.com/2020/05/11/Prometheus_SNMP_Exporter/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.png">
-      <meta itemprop="name" content="Keju Ren">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="时光穿梭机">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/05/11/Prometheus_SNMP_Exporter/" class="post-title-link" itemprop="url">Prometheus SNMP Exporter</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-05-11 14:43:59" itemprop="dateCreated datePublished" datetime="2020-05-11T14:43:59+08:00">2020-05-11</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><a href="https://github.com/prometheus/snmp_exporter" target="_blank" rel="noopener">Prometheus SNMP Exporter 项目地址</a></p>
-<p>SNMP Exporter 从 SNMP 服务中采集信息提供给 Promethers 监控系统使用。<br>有两个部分，执行提供数据的 exporter，以使用的 <a href="https://github.com/prometheus/snmp_exporter/blob/master/generator" target="_blank" rel="noopener">generator</a> （取决于netsnmp）生成配置为 exporter 提供配置。</p>
-<h2 id="Exporter-配置"><a href="#Exporter-配置" class="headerlink" title="Exporter 配置"></a>Exporter 配置</h2><p>默认情况下，snmp exporter 从 snmp.yml 文件中读取配置。此文件不是手动编写的，而是使用 <a href="https://github.com/prometheus/snmp_exporter/blob/master/generator" target="_blank" rel="noopener">generator</a> 生成它。<br>默认配置的 snmp.yml 配置文件中包含各种公共硬件，对于这些硬件，mib对常见设备通用，使用 snmp v2 GETBULK 可以遍历它们。<br>除了最简单的设置外，您还需要使用生成器。需要定制哪些对象是遍历的，使用非公开 MIB 或指定认证参数。</p>
-<h2 id="Prometheus-配置"><a href="#Prometheus-配置" class="headerlink" title="Prometheus 配置"></a>Prometheus 配置</h2><p>SNMP Exporter 需要将地址作为参数传递，这可以通过重新标记来完成。</p>
-<p>示例：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">scrape_configs:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">job_name:</span> <span class="string">'snmp'</span></span><br><span class="line">    <span class="attr">static_configs:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">targets:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="number">192.168</span><span class="number">.1</span><span class="number">.2</span>  <span class="comment"># SNMP 设备</span></span><br><span class="line">    <span class="attr">metrics_path:</span> <span class="string">/snmp</span></span><br><span class="line">    <span class="attr">params:</span></span><br><span class="line">      <span class="attr">module:</span> <span class="string">[if_mib]</span></span><br><span class="line">    <span class="attr">relabel_configs:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">source_labels:</span> <span class="string">[__address__]</span></span><br><span class="line">        <span class="attr">target_label:</span> <span class="string">__param_target</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">source_labels:</span> <span class="string">[__param_target]</span></span><br><span class="line">        <span class="attr">target_label:</span> <span class="string">instance</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">target_label:</span> <span class="string">__address__</span></span><br><span class="line">        <span class="attr">replacement:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span><span class="string">:9116</span>  <span class="comment"># SNMP exporter's 真正地址，格式为 hostname:port。</span></span><br></pre></td></tr></table></figure>
-
-<p>这种配置允许 Prometheus 提供调度和服务自动发现，这与不能在我们要从其获取指标的机器上运行 Exporter 的所有其他 Exporter 有所不同。</p>
-<h2 id="处理大计数器值"><a href="#处理大计数器值" class="headerlink" title="处理大计数器值"></a>处理大计数器值</h2><p>为 Counter64 较大的值提供准确的计数器，exporter 将为每 2^53 值自动包装，以避免 64 位浮点舍入。<br>要禁用此功能，请使用命令行参数 <code>--no-snmp.wrap-large-counters</code>。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1613,7 +1646,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-count">14</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
