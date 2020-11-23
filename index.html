@@ -175,6 +175,251 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.renkeju.com/2020/11/23/OpenVAS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Keju Ren">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="时光穿梭机">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/11/23/OpenVAS/" class="post-title-link" itemprop="url">OpenVAS</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-11-23 11:46:00 / 修改时间：13:09:01" itemprop="dateCreated datePublished" datetime="2020-11-23T11:46:00+08:00">2020-11-23</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>通过源代码在Ubuntu 20.04上构建GVM 11</p>
+</blockquote>
+<h2 id="基础环境准备"><a href="#基础环境准备" class="headerlink" title="基础环境准备"></a>基础环境准备</h2><h3 id="运行系统更新"><a href="#运行系统更新" class="headerlink" title="运行系统更新"></a>运行系统更新</h3><p>首先，更新和升级系统软件包：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt update </span><br><span class="line">$ sudo apt upgrade</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建GVM用户"><a href="#创建GVM用户" class="headerlink" title="创建GVM用户"></a>创建GVM用户</h3><p>在此演示中，我们将以非特权系统用户身份运行GVM。因此，我们将创建 gvm 用户和组。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo useradd -r -d &#x2F;opt&#x2F;gvm -c &quot;GVM (OpenVAS) User&quot; -s &#x2F;bin&#x2F;bash gvm</span><br></pre></td></tr></table></figure>
+
+<p>根据选项指定创建GVM用户目录<code>-d</code>在上面的命令中，将用户和组所有权设置为<code>gvm</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo mkdir &#x2F;opt&#x2F;gvm</span><br><span class="line">$ sudo chown gvm:gvm &#x2F;opt&#x2F;gvm</span><br></pre></td></tr></table></figure>
+
+<h3 id="安装所需的构建工具"><a href="#安装所需的构建工具" class="headerlink" title="安装所需的构建工具"></a>安装所需的构建工具</h3><p>为了在Ubuntu 20.04上成功构建GVM 11，您需要安装许多必需的依赖项和构建工具。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt install gcc g++ make bison flex libksba-dev curl redis libpcap-dev </span><br><span class="line">cmake git pkg-config libglib2.0-dev libgpgme-dev libgnutls28-dev uuid-dev </span><br><span class="line">libssh-gcrypt-dev libldap2-dev gnutls-bin libmicrohttpd-dev libhiredis-dev </span><br><span class="line">zlib1g-dev libxml2-dev libradcli-dev clang-format libldap2-dev doxygen </span><br><span class="line">gcc-mingw-w64 xml-twig-tools libical-dev perl-base heimdal-dev libpopt-dev </span><br><span class="line">libsnmp-dev python3-setuptools python3-paramiko python3-lxml python3-defusedxml python3-dev gettext python3-polib xmltoman </span><br><span class="line">python3-pip texlive-fonts-recommended texlive-latex-extra --no-install-recommends</span><br></pre></td></tr></table></figure>
+
+<h3 id="在Ubuntu-20-04上安装Yarn"><a href="#在Ubuntu-20-04上安装Yarn" class="headerlink" title="在Ubuntu 20.04上安装Yarn"></a>在Ubuntu 20.04上安装Yarn</h3><p>接下来，安装Yarn JavaScript程序包管理器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ curl -sS https:&#x2F;&#x2F;dl.yarnpkg.com&#x2F;debian&#x2F;pubkey.gpg | sudo apt-key add -</span><br><span class="line">$ echo &quot;deb https:&#x2F;&#x2F;dl.yarnpkg.com&#x2F;debian&#x2F; stable main&quot; | sudo tee &#x2F;etc&#x2F;apt&#x2F;sources.list.d&#x2F;yarn.list</span><br><span class="line">$ sudo apt update </span><br><span class="line">$ sudo apt install yarn</span><br></pre></td></tr></table></figure>
+
+<h3 id="在Ubuntu-20-04上安装PostgreSQL"><a href="#在Ubuntu-20-04上安装PostgreSQL" class="headerlink" title="在Ubuntu 20.04上安装PostgreSQL"></a>在Ubuntu 20.04上安装PostgreSQL</h3><p>GVM 11放弃了对sqlite3的支持，目前仅支持PostgreSQL作为后端数据库。因此，您需要在Ubuntu 20.04上安装PostgreSQL。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt install postgresql postgresql-contrib postgresql-server-dev-all</span><br></pre></td></tr></table></figure>
+
+<h4 id="创建PostgreSQL用户和数据库"><a href="#创建PostgreSQL用户和数据库" class="headerlink" title="创建PostgreSQL用户和数据库"></a>创建PostgreSQL用户和数据库</h4><p>安装完成后，为OpenVAS Manager创建PostgreSQL用户和数据库。请注意，数据库和用户应创建为PostgreSQL用户<code>postgres</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ sudo -Hiu postgres</span><br><span class="line">createuser gvm</span><br><span class="line">createdb -O gvm gvmd</span><br></pre></td></tr></table></figure>
+
+<p>授予PostgreSQL用户DBA角色</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">psql gvmd</span><br><span class="line">create role dba with superuser noinherit;</span><br><span class="line">grant dba to gvm;</span><br><span class="line">create extension &quot;uuid-ossp&quot;;</span><br><span class="line">q</span><br><span class="line">exit</span><br></pre></td></tr></table></figure>
+
+<p>完成后，重新启动PostgreSQL</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl restart postgresql</span><br></pre></td></tr></table></figure>
+
+<h2 id="从源代码构建GVM-11"><a href="#从源代码构建GVM-11" class="headerlink" title="从源代码构建GVM 11"></a>从源代码构建GVM 11</h2><p>在Ubuntu 20.04上安装和设置GVM 11需要多种工具。这些包括;</p>
+<pre><code>* GVM库
+* OpenVAS
+* OSPd
+* ospd-openvas
+* 绿骨漏洞管理器
+* 绿骨安全助手
+* Python GVM
+* GVM工具
+* OpenVAS SMB</code></pre><p>每个组件都有 自述文件 还有一个 安装.md 该文件说明了如何构建和安装它。</p>
+<h3 id="系统环境变量"><a href="#系统环境变量" class="headerlink" title="系统环境变量"></a>系统环境变量</h3><p>由于我们以非特权用户gvm的身份运行GVM，因此我们将在以下位置<code>/opt/gvm</code>安装所有GVM配置文件和库。</p>
+<p>更新PATH环境变量<code>/etc/environment</code>，包括GVM二进制路径，使其看起来像：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vim &#x2F;etc&#x2F;environment</span><br><span class="line"></span><br><span class="line">PATH&#x3D;&quot;&#x2F;usr&#x2F;local&#x2F;sbin:&#x2F;usr&#x2F;local&#x2F;bin:&#x2F;usr&#x2F;sbin:&#x2F;usr&#x2F;bin:&#x2F;sbin:&#x2F;bin:&#x2F;usr&#x2F;games:&#x2F;usr&#x2F;local&#x2F;games:&#x2F;opt&#x2F;gvm&#x2F;bin:&#x2F;opt&#x2F;gvm&#x2F;sbin:&#x2F;opt&#x2F;gvm&#x2F;.local&#x2F;bin&quot;</span><br></pre></td></tr></table></figure>
+
+<p>将GVM库路径添加到<code>/etc/ld.so.conf.d</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo echo &quot;&#x2F;opt&#x2F;gvm&#x2F;lib&quot; &gt; &#x2F;etc&#x2F;ld.so.conf.d&#x2F;gvm.conf</span><br></pre></td></tr></table></figure>
+
+<h3 id="构建并安装GVM-11"><a href="#构建并安装GVM-11" class="headerlink" title="构建并安装GVM 11"></a>构建并安装GVM 11</h3><p>切换到GVM用户gvm并创建一个临时目录来存储GVM源文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo su - gvm</span><br><span class="line">$ mkdir &#x2F;tmp&#x2F;gvm-source</span><br></pre></td></tr></table></figure>
+
+<h4 id="下载GVM源文件"><a href="#下载GVM源文件" class="headerlink" title="下载GVM源文件"></a>下载GVM源文件</h4><p>切换到上面创建的临时目录，然后运行后续命令以克隆GVM github分支文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ cd &#x2F;tmp&#x2F;gvm-source</span><br><span class="line">$ git clone -b gvm-libs-11.0 https:&#x2F;&#x2F;github.com&#x2F;greenbone&#x2F;gvm-libs.git</span><br><span class="line">$ git clone https:&#x2F;&#x2F;github.com&#x2F;greenbone&#x2F;openvas-smb.git</span><br><span class="line">$ git clone -b openvas-7.0 https:&#x2F;&#x2F;github.com&#x2F;greenbone&#x2F;openvas.git</span><br><span class="line">$ git clone -b ospd-2.0 https:&#x2F;&#x2F;github.com&#x2F;greenbone&#x2F;ospd.git</span><br><span class="line">$ git clone -b ospd-openvas-1.0 https:&#x2F;&#x2F;github.com&#x2F;greenbone&#x2F;ospd-openvas.git</span><br><span class="line">$ git clone -b gvmd-9.0 https:&#x2F;&#x2F;github.com&#x2F;greenbone&#x2F;gvmd.git</span><br><span class="line">$ git clone -b gsa-9.0 https:&#x2F;&#x2F;github.com&#x2F;greenbone&#x2F;gsa.git</span><br></pre></td></tr></table></figure>
+
+<p>源文件到位后，继续在Ubuntu 20.04上构建和安装GVM。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ls</span><br><span class="line">gsa gvmd gvm-libs openvas openvas-smb ospd ospd-openvas</span><br></pre></td></tr></table></figure>
+
+<p>请注意，我们会将所有GVM文件和库安装到非标准位置<code>/opt/gvm</code>。因此，您需要设置<code>PKG_CONFIG_PATH</code>在配置之前，将环境变量更改为pkg-configfiles的位置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ export PKG_CONFIG_PATH&#x3D;&#x2F;opt&#x2F;gvm&#x2F;lib&#x2F;pkgconfig:$PKG_CONFIG_PATH</span><br></pre></td></tr></table></figure>
+
+<h4 id="构建并安装GVM-11库"><a href="#构建并安装GVM-11库" class="headerlink" title="构建并安装GVM 11库"></a>构建并安装GVM 11库</h4><p>转到GVM库目录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cd gvm-libs</span><br></pre></td></tr></table></figure>
+
+<p>创建一个构建目录并转到其中:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir build</span><br><span class="line">$ cd build</span><br></pre></td></tr></table></figure>
+
+<p>配置构建:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cmake .. -DCMAKE_INSTALL_PREFIX&#x3D;&#x2F;opt&#x2F;gvm</span><br></pre></td></tr></table></figure>
+
+<p>接下来，编译并安装GVM库</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ make</span><br><span class="line">$ make install</span><br></pre></td></tr></table></figure>
+
+<h4 id="生成并安装OpenVAS和OpenVAS-SMB"><a href="#生成并安装OpenVAS和OpenVAS-SMB" class="headerlink" title="生成并安装OpenVAS和OpenVAS SMB"></a>生成并安装OpenVAS和OpenVAS SMB</h4><p>开放式漏洞评估扫描程序（OpenVAS）是功能齐全的扫描引擎，它执行网络漏洞测试（NVT）的不断更新和扩展的提要。</p>
+<p>OpenVAS SMB提供了一些模块，供OpenVAS扫描仪通过Windows Management Instrumentation API和Microsoft Windows系统进行交互。 winexe 二进制文件以在该系统上远程执行进程。</p>
+<ul>
+<li><p>编译安装openvas-smb:</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ cd &#x2F;tmp&#x2F;gvm-source&#x2F;openvas-smb&#x2F;</span><br><span class="line">$ mkdir build</span><br><span class="line">$ cd build</span><br><span class="line">$ cmake .. -DCMAKE_INSTALL_PREFIX&#x3D;&#x2F;opt&#x2F;gvm</span><br><span class="line">$ make</span><br><span class="line">$ make install</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>构建并安装OpenVAS扫描仪:</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ cd &#x2F;tmp&#x2F;gvm-source&#x2F;openvas</span><br><span class="line">$ mkdir build</span><br><span class="line">$ cd build</span><br><span class="line">$ cmake .. -DCMAKE_INSTALL_PREFIX&#x3D;&#x2F;opt&#x2F;gvm</span><br><span class="line">$ make</span><br><span class="line">$ make install</span><br></pre></td></tr></table></figure>
+
+<p>  如果遇到错误<code>...error: ‘pcap_lookupdev’ is deprecated: use &#39;pcap_findalldevs&#39;...</code>编译openvas时，编辑 CMakeLists.txt 归档并替换如下所示的行，然后重新运行安装:</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ vim &#x2F;tmp&#x2F;gev-source&#x2F;openvas&#x2F;CMakeLists.txt</span><br><span class="line">...</span><br><span class="line">#set (CMAKE_C_FLAGS_DEBUG &quot;$&#123;CMAKE_C_FLAGS_DEBUG&#125; $&#123;COVERAGE_FLAGS&#125;&quot;)</span><br><span class="line">set (CMAKE_C_FLAGS_DEBUG &quot;$&#123;CMAKE_C_FLAGS_DEBUG&#125; -Werror -Wno-error&#x3D;deprecated-declarations&quot;)</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="配置-OpenVAS"><a href="#配置-OpenVAS" class="headerlink" title="配置 OpenVAS"></a>配置 OpenVAS</h3><p>主机扫描信息临时存储在Redis服务器上。 Redis服务器的默认配置为 /etc/redis/redis.conf。</p>
+<p>切换回特权用户并继续。</p>
+<p>首先，运行下面的命令为已安装的共享库创建缓存:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo ldconfig</span><br></pre></td></tr></table></figure>
+
+<p>接下来，复制OpenVAS扫描仪Redis配置文件<code>redis-openvas.conf</code>，到相同的Redis配置目录:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo cp &#x2F;tmp&#x2F;gvm-source&#x2F;openvas&#x2F;config&#x2F;redis-openvas.conf &#x2F;etc&#x2F;redis&#x2F;</span><br><span class="line">$ sudo chown redis:redis &#x2F;etc&#x2F;redis&#x2F;redis-openvas.conf</span><br></pre></td></tr></table></figure>
+
+<p>更新路径到Redis unix套接字 /opt/gvm/etc/openvas/openvas.conf 使用 db_address 参数如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo echo &quot;db_address &#x3D; &#x2F;run&#x2F;redis-openvas&#x2F;redis.sock&quot; &gt; &#x2F;opt&#x2F;gvm&#x2F;etc&#x2F;openvas&#x2F;openvas.conf</span><br><span class="line">$ chown gvm:gvm &#x2F;opt&#x2F;gvm&#x2F;etc&#x2F;openvas&#x2F;openvas.conf</span><br></pre></td></tr></table></figure>
+
+<p>将gvm用户添加到redis组：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo usermod -aG redis gvm</span><br></pre></td></tr></table></figure>
+
+<p>您还可以通过以下调整来优化Redis服务器本身，从而提高性能：</p>
+<ol>
+<li><p>增加somaxconn的值，以避免客户端连接速度慢的问题。</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo echo &quot;net.core.somaxconn &#x3D; 1024&quot; &gt;&gt; &#x2F;etc&#x2F;sysctl.conf.d&#x2F;80.openvas.conf</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Redis后台保存在内存不足的情况下可能会失败。为避免这种情况，请启用memory overcommit。</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo echo &#39;vm.overcommit_memory &#x3D; 1&#39; &gt;&gt; &#x2F;etc&#x2F;sysctl.conf.d&#x2F;80-openvas.conf</span><br></pre></td></tr></table></figure>
+
+<p> 重新加载上面创建的sysctl变量。</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo sysctl --system</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>为了避免Redis造成延迟和内存使用问题，请禁用Linux内核对透明大页面（THP）的支持。为了轻松解决此问题，请为此创建一个systemd服务单元</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ sudo cat &lt; EOF &gt; &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;disable_thp.service</span><br><span class="line">[Unit]</span><br><span class="line">Description&#x3D;Disable Kernel Support for Transparent Huge Pages (THP)</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">Type&#x3D;simple</span><br><span class="line">ExecStart&#x3D;&#x2F;bin&#x2F;sh -c &quot;echo &#39;never&#39; &gt; &#x2F;sys&#x2F;kernel&#x2F;mm&#x2F;transparent_hugepage&#x2F;enabled &amp;&amp; echo &#39;never&#39; &gt; &#x2F;sys&#x2F;kernel&#x2F;mm&#x2F;transparent_hugepage&#x2F;defrag&quot;</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy&#x3D;multi-user.target</span><br></pre></td></tr></table></figure>
+
+<p> 重新加载系统配置。</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl daemon-reload</span><br><span class="line">$ sudo systemctl enable --now disable_thp</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>重新启动OpenVAS Redis服务器:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo syetemctl restart redis-server</span><br></pre></td></tr></table></figure>
+
+<p>许多网络漏洞测试（NVT）需要root特权才能执行某些操作。以来 openvas 从 ospd-openvas 通过sudo将以下行添加到sudoers文件中，以确保 gvm 本演示中使用的用户可以使用无密码sudo以提升的权限运行openvas。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo echo &quot;gvm ALL &#x3D; NOPASSWD: &#x2F;opt&#x2F;gvm&#x2F;sbin&#x2F;openvas&quot; &gt; &#x2F;etc&#x2F;sudoers.d&#x2F;gvm</span><br></pre></td></tr></table></figure>
+
+<p>另外，更新<code>secure_path</code>包括GVM<code>/sbin</code>路径<code>/opt/gvm/sbin</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo visudo</span><br><span class="line">Defaults secure_path&#x3D;&quot;&#x2F;usr&#x2F;local&#x2F;sbin:&#x2F;usr&#x2F;local&#x2F;bin:&#x2F;usr&#x2F;sbin:&#x2F;usr&#x2F;bin:&#x2F;sbin:&#x2F;bin:&#x2F;snap&#x2F;bin:&#x2F;opt&#x2F;gvm&#x2F;sbin&quot;</span><br></pre></td></tr></table></figure>
+
+<p>另外，启用 gvm 用户来运行GSA Web应用程序守护程序， gsad，使用无密码的sudo。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo echo &quot;gvm ALL &#x3D; NOPASSWD: &#x2F;opt&#x2F;gvm&#x2F;sbin&#x2F;gsad&quot; &gt;&gt; &#x2F;etc&#x2F;sudoers.d&#x2F;gvm</span><br></pre></td></tr></table></figure>
+
+<h3 id="更新OpenVAS-NVT"><a href="#更新OpenVAS-NVT" class="headerlink" title="更新OpenVAS NVT"></a>更新OpenVAS NVT</h3><p>使用<code>greenbone-nvt-sync</code>命令更新Greenbone Security Feed/社区Feed中的OpenVAS网络漏洞测试Feed。<code>greenbone-nvt-sync</code>命令禁止以特权用户root身份执行，因此切换回我们上面创建的GVM用户并更新NVT。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo su - gvm</span><br><span class="line">$ greenbone-nvt-sync</span><br></pre></td></tr></table></figure>
+
+<p>更新完成后，您需要使用来自VT文件的相同VT信息更新Redis服务器。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo openvas --update-vt-info</span><br></pre></td></tr></table></figure>
+
+<p>生成并安装Greenbone漏洞管理器:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ export PKG_CONFIG_PATH&#x3D;&#x2F;opt&#x2F;gvm&#x2F;lib&#x2F;pkgconfig:$PKG_CONFIG_PATH</span><br><span class="line">$ cd &#x2F;tmp&#x2F;gvm-source&#x2F;gvmd</span><br><span class="line">$ mkdir build</span><br><span class="line">$ cd build</span><br><span class="line">$ cmake .. -DCMAKE_INSTALL_PREFIX&#x3D;&#x2F;opt&#x2F;gvm</span><br><span class="line">$ make</span><br><span class="line">$ make install</span><br></pre></td></tr></table></figure>
+
+<p>生成并安装Greenbone Security Assistant</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ cd &#x2F;tmp&#x2F;gvm-source&#x2F;gsa</span><br><span class="line">$ mkdir build</span><br><span class="line">$ cd build</span><br><span class="line">$ cmake .. -DCMAKE_INSTALL_PREFIX&#x3D;&#x2F;opt&#x2F;gvm</span><br><span class="line">$ make</span><br><span class="line">$ make install</span><br></pre></td></tr></table></figure>
+
+<p>从Feed服务器更新GVM CERT和SCAP数据；</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ greenbone-scapdata-sync</span><br><span class="line">$ greenbone-certdata-sync</span><br></pre></td></tr></table></figure>
+
+<p>考虑将cron作业设置为以您喜欢的频率运行nvts，cert和scap数据更新脚本，以从Feed服务器提取更新。</p>
+<p>接下来，运行以下命令以生成证书gvmd。服务器证书用于身份验证，而客户端证书主要用于授权。更多关于 man gvm-manage-certs。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ gvm-manage-certs -a</span><br></pre></td></tr></table></figure>
+
+<h3 id="生成并安装OSPd和OSPd-OpenVAS"><a href="#生成并安装OSPd和OSPd-OpenVAS" class="headerlink" title="生成并安装OSPd和OSPd-OpenVAS"></a>生成并安装OSPd和OSPd-OpenVAS</h3><p>开放扫描仪协议（OSP）为不同的安全扫描仪创建统一的界面，并在中央Greenbone Vulnerability Manager服务下始终提供其控制流和扫描结果。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ export PKG_CONFIG_PATH&#x3D;&#x2F;opt&#x2F;gvm&#x2F;lib&#x2F;pkgconfig:$PKG_CONFIG_PATH</span><br><span class="line">$ mkdir -p &#x2F;opt&#x2F;gvm&#x2F;lib&#x2F;python3.8&#x2F;site-packages&#x2F;</span><br><span class="line">$ export PYTHONPATH&#x3D;&#x2F;opt&#x2F;gvm&#x2F;lib&#x2F;python3.8&#x2F;site-packages</span><br><span class="line">$ cd &#x2F;tmp&#x2F;gvm-source&#x2F;ospd</span><br><span class="line">$ python3 setup.py install --prefix&#x3D;&#x2F;opt&#x2F;gvm</span><br><span class="line">$ cd &#x2F;tmp&#x2F;gvm-source&#x2F;ospd-openvas</span><br><span class="line">$ python3 setup.py install --prefix&#x3D;&#x2F;opt&#x2F;gvm</span><br></pre></td></tr></table></figure>
+
+<h2 id="启动OpenVAS扫描仪，GSA和GVM服务"><a href="#启动OpenVAS扫描仪，GSA和GVM服务" class="headerlink" title="启动OpenVAS扫描仪，GSA和GVM服务"></a>启动OpenVAS扫描仪，GSA和GVM服务</h2><p>运行以下命令 gvm 用户启动OpenVAS扫描仪，GSA（WebUI服务）和GVM守护程序。按照显示的顺序执行命令。</p>
+<ul>
+<li><p>启动OpenVAS</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ sudo &#x2F;usr&#x2F;bin&#x2F;python3 &#x2F;opt&#x2F;gvm&#x2F;bin&#x2F;ospd-openvas \</span><br><span class="line">--pid-file &#x2F;opt&#x2F;gvm&#x2F;var&#x2F;run&#x2F;ospd-openvas.pid \</span><br><span class="line">--log-file &#x2F;opt&#x2F;gvm&#x2F;var&#x2F;log&#x2F;gvm&#x2F;ospd-openvas.log \</span><br><span class="line">--lock-file-dir &#x2F;opt&#x2F;gvm&#x2F;var&#x2F;run -u &#x2F;opt&#x2F;gvm&#x2F;var&#x2F;run&#x2F;ospd.sock</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>启动GVM</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ gvmd --osp-vt-update&#x3D;&#x2F;opt&#x2F;gvm&#x2F;var&#x2F;run&#x2F;ospd.sock</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>启动GSA</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo gsad</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>您还可以在以下位置找到日志： <code>/var/log/gvm/</code>，在这种情况下是<code>/opt/gvm/var/log/gvm</code>。</p>
+<h3 id="创建GVM扫描仪"><a href="#创建GVM扫描仪" class="headerlink" title="创建GVM扫描仪"></a>创建GVM扫描仪</h3><p>由于我们启动了扫描仪并将其设置为使用我们的非标准扫描仪主机路径<code>/opt/gvm/var/run/ospd.sock</code>，我们需要创建并注册我们的扫描仪：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ gvmd --create-scanner&#x3D;&quot;Kifarunix-demo OpenVAS Scanner&quot; --scanner-type&#x3D;&quot;OpenVAS&quot; --scanner-host&#x3D;&#x2F;opt&#x2F;gvm&#x2F;var&#x2F;run&#x2F;ospd.sock</span><br></pre></td></tr></table></figure>
+
+<p>接下来，您需要验证您的扫描仪。为此，您首先需要获取扫描仪标识符。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ gvmd --get-scanners</span><br><span class="line">08b69003-5fc2-4037-a479-93b440211c73 OpenVAS &#x2F;tmp&#x2F;ospd.sock 0 OpenVAS Default</span><br><span class="line">6acd0832-df90-11e4-b9d5-28d24461215b CVE 0 CVE</span><br><span class="line">9c6f2214-eb7c-4613-96bd-21551b259cf1 OpenVAS &#x2F;opt&#x2F;gvm&#x2F;var&#x2F;run&#x2F;ospd.sock 9390 Kifarunix-demo OpenVAS Scanner</span><br></pre></td></tr></table></figure>
+
+<p>根据上面的输出，我们的扫描仪UUID为<code>9c6f2214-eb7c-4613-96bd-21551b259cf1</code>。</p>
+<p>验证扫描仪：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ gvmd --verify-scanner&#x3D;9c6f2214-eb7c-4613-96bd-21551b259cf1</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建OpenVAS（GVM-11）管理员"><a href="#创建OpenVAS（GVM-11）管理员" class="headerlink" title="创建OpenVAS（GVM 11）管理员"></a>创建OpenVAS（GVM 11）管理员</h3><p>通过运行以下命令创建OpenVAS管理用户：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ gvmd --create-user gvmadmin</span><br></pre></td></tr></table></figure>
+
+<p>此命令为用户生成一个随机密码。创建自己的密码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ gvmd --create-user gvmadmin [email protected]</span><br></pre></td></tr></table></figure>
+
+<p>重置现有用户的密码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ gvmd --user&#x3D; --new-password&#x3D;</span><br></pre></td></tr></table></figure>
+
+<h2 id="访问GVM-11（OpenVAS）"><a href="#访问GVM-11（OpenVAS）" class="headerlink" title="访问GVM 11（OpenVAS）"></a>访问GVM 11（OpenVAS）</h2><p>Greenbone Security Assistant（GSA）WebUI守护程序打开端口443，并侦听所有接口。如果防火墙正在运行，请打开此端口以允许外部访问。您可以通过网址访问GSA https:。接受自签名SSL警告并继续。</p>
+<p>使用上面生成的管理凭据登录。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://blog.renkeju.com/2020/11/23/Ubuntu-ssh-service-Google-authenticator-2FA/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1474,117 +1719,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://blog.renkeju.com/2020/05/11/Quickly_build_a_monitoring_system_test_environment/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.png">
-      <meta itemprop="name" content="Keju Ren">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="时光穿梭机">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/05/11/Quickly_build_a_monitoring_system_test_environment/" class="post-title-link" itemprop="url">快速构建监控系统测试环境</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-05-11 14:43:59" itemprop="dateCreated datePublished" datetime="2020-05-11T14:43:59+08:00">2020-05-11</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="Docker"><a href="#Docker" class="headerlink" title="Docker"></a>Docker</h2><p>在测试环境中建议使用 Docker 进行部署。在后面的生产环境部署中我也会提供 Ansible 安装方式。<br><a href="https://download.daocloud.io/Docker_Mirror/Docker" target="_blank" rel="noopener">Docker 安装方式</a><br><a href="https://download.daocloud.io/Docker_Mirror/Docker_Compose" target="_blank" rel="noopener">Docker Compose 安装方式</a><br><a href="https://www.daocloud.io/mirror" target="_blank" rel="noopener">Docker 加速器</a></p>
-<h2 id="Docker-Compose"><a href="#Docker-Compose" class="headerlink" title="Docker Compose"></a>Docker Compose</h2><p><a href="https://github.com/renkeju/prometheus_lab" target="_blank" rel="noopener">prometheus 实验环境 Docker Compose 编排文件项目地址</a></p>
-<ul>
-<li>启动<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/renkeju/prometheus_lab.git</span><br><span class="line"><span class="built_in">cd</span> prometheus_lab</span><br><span class="line">docker-compose push</span><br><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure></li>
-<li>停止<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose stop</span><br></pre></td></tr></table></figure></li>
-<li>删除<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker-compose rm -f</span><br><span class="line">docker volume prune <span class="comment"># 注意：执行此命令之后所存储的历史数据都会被删除</span></span><br></pre></td></tr></table></figure></li>
-<li>查看日志<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose logs</span><br></pre></td></tr></table></figure>
-<h2 id="启动后检查"><a href="#启动后检查" class="headerlink" title="启动后检查"></a>启动后检查</h2>在 docker compose 文件中暴露了三个端口号，分别是：</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th align="center">端口号</th>
-<th align="center">容器内端口号</th>
-<th align="center">服务</th>
-<th align="center">用户认证</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">3000</td>
-<td align="center">3000</td>
-<td align="center">grafana</td>
-<td align="center">有</td>
-</tr>
-<tr>
-<td align="center">9090</td>
-<td align="center">9090</td>
-<td align="center">prometheus</td>
-<td align="center">无</td>
-</tr>
-<tr>
-<td align="center">9116</td>
-<td align="center">9116</td>
-<td align="center">snmp_exporter</td>
-<td align="center">无</td>
-</tr>
-</tbody></table>
-<p>其他容器内启动的服务端口号没有必要暴露出来，使用 <code>links</code> 作为链接，可以提高安全性。如果需要为其他服务端口访问添加访问认证，可以配置 Nginx 使用，在后面我们会提到。</p>
-<ul>
-<li><p>Grafana</p>
-<p>  在浏览器中输入 <code>http://&lt;your_ip_address&gt;:3000</code> 访问 Grafana，默认用户名：<code>admin</code>，密码则是 docker-composer 文件中变量 <code>GF_SECURITY_ADMIN_PASSWORD</code> 的值。</p>
-<p>  <img src="/images/Quickly_build_a_monitoring_system_test_environment/grafana.png" alt="第一次登录 Grafana"></p>
-</li>
-<li><p>prometheus</p>
-<p>  在浏览器中输入 <code>http://&lt;your_ip_address&gt;:9090</code> 访问 prometheus</p>
-<p>  <img src="/images/Quickly_build_a_monitoring_system_test_environment/%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0.png" alt="prometheus 服务发现"></p>
-<p>  <img src="/images/Quickly_build_a_monitoring_system_test_environment/%E7%9B%AE%E6%A0%87.png" alt="prometheus 目标"></p>
-<p>  <img src="/images/Quickly_build_a_monitoring_system_test_environment/%E5%91%8A%E8%AD%A6.png" alt="prometheus 报警"></p>
-</li>
-<li><p>snmp_exporter</p>
-<p>  在浏览器中输入 <code>http://&lt;your_ip_address&gt;:9116</code> 访问 snmp_exporter，snmp_exporter web 提供的信息并不多，你可以查看 <code>snmp.yml</code> 配置文件的内容，也可以对 snmpd 服务进行测试。</p>
-<p>  <img src="/images/Quickly_build_a_monitoring_system_test_environment/SNMP_exporter.png" alt="snmp_exporter"></p>
-</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1656,7 +1790,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-count">15</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

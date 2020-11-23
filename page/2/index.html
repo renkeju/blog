@@ -175,6 +175,117 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.renkeju.com/2020/05/11/Quickly_build_a_monitoring_system_test_environment/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Keju Ren">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="时光穿梭机">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/05/11/Quickly_build_a_monitoring_system_test_environment/" class="post-title-link" itemprop="url">快速构建监控系统测试环境</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-05-11 14:43:59" itemprop="dateCreated datePublished" datetime="2020-05-11T14:43:59+08:00">2020-05-11</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Docker"><a href="#Docker" class="headerlink" title="Docker"></a>Docker</h2><p>在测试环境中建议使用 Docker 进行部署。在后面的生产环境部署中我也会提供 Ansible 安装方式。<br><a href="https://download.daocloud.io/Docker_Mirror/Docker" target="_blank" rel="noopener">Docker 安装方式</a><br><a href="https://download.daocloud.io/Docker_Mirror/Docker_Compose" target="_blank" rel="noopener">Docker Compose 安装方式</a><br><a href="https://www.daocloud.io/mirror" target="_blank" rel="noopener">Docker 加速器</a></p>
+<h2 id="Docker-Compose"><a href="#Docker-Compose" class="headerlink" title="Docker Compose"></a>Docker Compose</h2><p><a href="https://github.com/renkeju/prometheus_lab" target="_blank" rel="noopener">prometheus 实验环境 Docker Compose 编排文件项目地址</a></p>
+<ul>
+<li>启动<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/renkeju/prometheus_lab.git</span><br><span class="line"><span class="built_in">cd</span> prometheus_lab</span><br><span class="line">docker-compose push</span><br><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure></li>
+<li>停止<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose stop</span><br></pre></td></tr></table></figure></li>
+<li>删除<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker-compose rm -f</span><br><span class="line">docker volume prune <span class="comment"># 注意：执行此命令之后所存储的历史数据都会被删除</span></span><br></pre></td></tr></table></figure></li>
+<li>查看日志<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose logs</span><br></pre></td></tr></table></figure>
+<h2 id="启动后检查"><a href="#启动后检查" class="headerlink" title="启动后检查"></a>启动后检查</h2>在 docker compose 文件中暴露了三个端口号，分别是：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">端口号</th>
+<th align="center">容器内端口号</th>
+<th align="center">服务</th>
+<th align="center">用户认证</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">3000</td>
+<td align="center">3000</td>
+<td align="center">grafana</td>
+<td align="center">有</td>
+</tr>
+<tr>
+<td align="center">9090</td>
+<td align="center">9090</td>
+<td align="center">prometheus</td>
+<td align="center">无</td>
+</tr>
+<tr>
+<td align="center">9116</td>
+<td align="center">9116</td>
+<td align="center">snmp_exporter</td>
+<td align="center">无</td>
+</tr>
+</tbody></table>
+<p>其他容器内启动的服务端口号没有必要暴露出来，使用 <code>links</code> 作为链接，可以提高安全性。如果需要为其他服务端口访问添加访问认证，可以配置 Nginx 使用，在后面我们会提到。</p>
+<ul>
+<li><p>Grafana</p>
+<p>  在浏览器中输入 <code>http://&lt;your_ip_address&gt;:3000</code> 访问 Grafana，默认用户名：<code>admin</code>，密码则是 docker-composer 文件中变量 <code>GF_SECURITY_ADMIN_PASSWORD</code> 的值。</p>
+<p>  <img src="/images/Quickly_build_a_monitoring_system_test_environment/grafana.png" alt="第一次登录 Grafana"></p>
+</li>
+<li><p>prometheus</p>
+<p>  在浏览器中输入 <code>http://&lt;your_ip_address&gt;:9090</code> 访问 prometheus</p>
+<p>  <img src="/images/Quickly_build_a_monitoring_system_test_environment/%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0.png" alt="prometheus 服务发现"></p>
+<p>  <img src="/images/Quickly_build_a_monitoring_system_test_environment/%E7%9B%AE%E6%A0%87.png" alt="prometheus 目标"></p>
+<p>  <img src="/images/Quickly_build_a_monitoring_system_test_environment/%E5%91%8A%E8%AD%A6.png" alt="prometheus 报警"></p>
+</li>
+<li><p>snmp_exporter</p>
+<p>  在浏览器中输入 <code>http://&lt;your_ip_address&gt;:9116</code> 访问 snmp_exporter，snmp_exporter web 提供的信息并不多，你可以查看 <code>snmp.yml</code> 配置文件的内容，也可以对 snmpd 服务进行测试。</p>
+<p>  <img src="/images/Quickly_build_a_monitoring_system_test_environment/SNMP_exporter.png" alt="snmp_exporter"></p>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://blog.renkeju.com/2020/05/11/Prometheus_SNMP_Exporter/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -743,7 +854,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-count">15</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
