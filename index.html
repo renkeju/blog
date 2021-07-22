@@ -182,6 +182,69 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.renkeju.com/2021/07/22/Use_rclone_to_mount_OneDrive/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Keju Ren">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="时光穿梭机">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/07/22/Use_rclone_to_mount_OneDrive/" class="post-title-link" itemprop="url">使用 rclone 挂载 OneDrive</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-07-22 22:08:12 / 修改时间：22:11:45" itemprop="dateCreated datePublished" datetime="2021-07-22T22:08:12+08:00">2021-07-22</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <ul>
+<li>Ubuntu 20.04 LTS Desktop Environments</li>
+<li>Only User</li>
+<li>Auto mount at system boot</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://blog.renkeju.com/2021/07/22/rsync/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -207,7 +270,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-07-22 21:42:53 / 修改时间：22:07:21" itemprop="dateCreated datePublished" datetime="2021-07-22T21:42:53+08:00">2021-07-22</time>
+              <time title="创建时间：2021-07-22 21:42:53 / 修改时间：22:08:26" itemprop="dateCreated datePublished" datetime="2021-07-22T21:42:53+08:00">2021-07-22</time>
             </span>
 
           
@@ -1629,84 +1692,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://blog.renkeju.com/2020/05/11/Brief_description_of_the_configuration_file/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Keju Ren">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="时光穿梭机">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/05/11/Brief_description_of_the_configuration_file/" class="post-title-link" itemprop="url">配置文件的简单说明</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-05-11 14:43:59" itemprop="dateCreated datePublished" datetime="2020-05-11T14:43:59+08:00">2020-05-11</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>在文章 <a href="/2020/05/11/Quickly_build_a_monitoring_system_test_environment/" title="快速构建监控系统测试环境">快速构建监控系统测试环境</a> 中，我们已经启动了一个实验环境，<a href="https://github.com/renkeju/prometheus_lab.git" target="_blank" rel="noopener">prometheus_lab</a> 中的配置文件内容被没有做详细的说明。下面我们来说说测试环境中的配置文件。</p>
-<h2 id="Prometheus-scrape-config"><a href="#Prometheus-scrape-config" class="headerlink" title="Prometheus scrape config"></a>Prometheus scrape config</h2><p>这里只着重说明 <code>prometheus/prometheus.yml</code> 文件中与 SNMP 相关的配置。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">scrape_configs:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">job_name:</span> <span class="string">prometheus</span></span><br><span class="line">    <span class="attr">metrics_path:</span> <span class="string">/metrics</span></span><br><span class="line">    <span class="attr">static_configs:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">targets:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">prometheus:9090</span></span><br><span class="line"></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">job_name:</span> <span class="string">node</span></span><br><span class="line">    <span class="attr">file_sd_configs:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">files:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/etc/prometheus/file_sd/node.yml</span></span><br><span class="line"></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">job_name:</span> <span class="string">snmp</span></span><br><span class="line">    <span class="attr">scrape_interval:</span> <span class="string">30s</span> <span class="comment"># 覆盖全局默认值</span></span><br><span class="line">    <span class="attr">scrape_timeout:</span> <span class="string">5s</span> <span class="comment"># 覆盖全局默认值</span></span><br><span class="line">    <span class="attr">file_sd_configs:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">files:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">/etc/prometheus/file_sd/snmp.yml</span> <span class="comment"># 指定 snmp 服务发现配置文件路径</span></span><br><span class="line">    <span class="attr">metrics_path:</span> <span class="string">/snmp</span></span><br><span class="line">    <span class="attr">params:</span></span><br><span class="line">      <span class="attr">module:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">if_mib</span>   <span class="comment"># 指定默认采集 MIB 模块的名称</span></span><br><span class="line">      <span class="attr">community:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">public</span>  <span class="comment"># 指定团体号，当 snmp_exporter snmp.yml 配置文件没有指定团体号，此处定义的团体号生效。</span></span><br><span class="line">    <span class="attr">relabel_configs:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">source_labels:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">__address__</span></span><br><span class="line">      <span class="attr">target_label:</span> <span class="string">__param_target</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">source_labels:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">__param_target</span></span><br><span class="line">      <span class="attr">target_label:</span> <span class="string">instance</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">replacement:</span> <span class="string">snmp_exporter:9116</span></span><br><span class="line">      <span class="attr">target_label:</span> <span class="string">__address__</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">source_labels:</span>  <span class="comment"># 从目标中获取MIB模块名称</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">mib</span></span><br><span class="line">      <span class="attr">target_label:</span> <span class="string">__param_module</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="Service-Discovery-Config"><a href="#Service-Discovery-Config" class="headerlink" title="Service Discovery Config"></a>Service Discovery Config</h2><p>snmp 的服务发现配置文件中我们可以额外定义一些参数，方便我们可以对不同目标做更小颗粒度的划分。<br>自动发现配置文件支持 json 格式与 yaml 格式，目标定义了 Prometheus 必须为指标而抓取的端点。<br>比如我在下面的示例中添加了<code>architecture</code>与<code>model</code>等变量，这些变量prometheus获取目标信息是，会作为目标的标签与目标绑定。</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">  &#123;</span><br><span class="line">      <span class="attr">"labels"</span>: &#123;</span><br><span class="line">          <span class="attr">"mib"</span>: <span class="string">"apcups"</span>,</span><br><span class="line">          <span class="attr">"architecture"</span>: <span class="string">"x86_64"</span>,</span><br><span class="line">          <span class="attr">"model"</span>: <span class="string">"linux"</span></span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="attr">"targets"</span>: [</span><br><span class="line">          <span class="string">"snmpd"</span></span><br><span class="line">      ]</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/Brief_description_of_the_configuration_file/%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0.png" alt="服务发现中的目标标签"></p>
-<h2 id="多个目标"><a href="#多个目标" class="headerlink" title="多个目标"></a>多个目标</h2><p>如果有多个目标，需要在服务发现配置文件中列出多个目标信息，这里我贴出一个简单的 python 脚本，可以生成自动发现配置文件，你也可以根据自己的需求修改。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"></span><br><span class="line">data = []</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> open(sys.argv[<span class="number">1</span>], <span class="string">"r"</span>) <span class="keyword">as</span> handler:</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> handler:</span><br><span class="line">        line = line.strip(<span class="string">'\n'</span>)</span><br><span class="line">        fields = line.split(<span class="string">','</span>)</span><br><span class="line">        labels = &#123;&#125;</span><br><span class="line">        labels[<span class="string">'brand'</span>] = fields[<span class="number">1</span>]</span><br><span class="line">        labels[<span class="string">'model'</span>] = fields[<span class="number">2</span>]</span><br><span class="line">        labels[<span class="string">'hostname'</span>] = fields[<span class="number">3</span>]</span><br><span class="line">        labels[<span class="string">'mib'</span>] = fields[<span class="number">4</span>]</span><br><span class="line">        targets = []</span><br><span class="line">        targets.append(fields[<span class="number">0</span>])</span><br><span class="line">        custom = &#123;&#125;</span><br><span class="line">	custom[<span class="string">'targets'</span>] = targets</span><br><span class="line">        custom[<span class="string">'labels'</span>] = labels</span><br><span class="line">        print(custom)</span><br><span class="line">        data.append(custom)</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> open(sys.argv[<span class="number">2</span>], <span class="string">"w"</span>) <span class="keyword">as</span> json_handler:</span><br><span class="line">    json.dump(data, json_handler, indent=<span class="number">4</span>)</span><br></pre></td></tr></table></figure>
-
-<p>你需要提前编辑一个 csv 文件，示例如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">192.168.100.1,Huawei,S5328C-EI,BJ-LG-HW5328,if_mib</span><br><span class="line">192.168.100.2,Huawei,Quidway S9306,SH-GQ-HW9306CSS,if_mib</span><br><span class="line">192.168.100.3,Huawei,Quidway S9306,BJ-LG-HW9306CSS,if_mib</span><br><span class="line">192.168.100.4,Huawei,Quidway S9306,GZ-RMZ-HW9306CSS,if_mib</span><br></pre></td></tr></table></figure>
-
-<p>第一个逗号前的内容为主机地址，第二个逗号前的内容为设备厂商名称，第三个逗号前的内容设备型号，第四个逗号前的内容为自定义设备名称，最后一段内容为获取mib名称。<br>使用下面的名称执行脚本：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python sd_generate.py &lt;your_csv_file_name&gt; &lt;sd_json_file_name&gt;</span><br></pre></td></tr></table></figure>
-
-<p>执行后生成如下内容：</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="attr">"labels"</span>: &#123;</span><br><span class="line">            <span class="attr">"mib"</span>: <span class="string">"if_mib"</span>,</span><br><span class="line">            <span class="attr">"brand"</span>: <span class="string">"Huawei"</span>,</span><br><span class="line">            <span class="attr">"hostname"</span>: <span class="string">"BJ-LG-HW5328"</span>,</span><br><span class="line">            <span class="attr">"model"</span>: <span class="string">"S5328C-EI"</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">"targets"</span>: [</span><br><span class="line">            <span class="string">"192.168.100.1"</span></span><br><span class="line">        ]</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="attr">"labels"</span>: &#123;</span><br><span class="line">            <span class="attr">"mib"</span>: <span class="string">"if_mib"</span>,</span><br><span class="line">            <span class="attr">"brand"</span>: <span class="string">"Huawei"</span>,</span><br><span class="line">            <span class="attr">"hostname"</span>: <span class="string">"SH-GQ-HW9306CSS"</span>,</span><br><span class="line">            <span class="attr">"model"</span>: <span class="string">"Quidway S9306"</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">"targets"</span>: [</span><br><span class="line">            <span class="string">"192.168.100.2"</span></span><br><span class="line">        ]</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="attr">"labels"</span>: &#123;</span><br><span class="line">            <span class="attr">"mib"</span>: <span class="string">"if_mib"</span>,</span><br><span class="line">            <span class="attr">"brand"</span>: <span class="string">"Huawei"</span>,</span><br><span class="line">            <span class="attr">"hostname"</span>: <span class="string">"BJ-LG-HW9306CSS"</span>,</span><br><span class="line">            <span class="attr">"model"</span>: <span class="string">"Quidway S9306"</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">"targets"</span>: [</span><br><span class="line">            <span class="string">"192.168.100.3"</span></span><br><span class="line">        ]</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="attr">"labels"</span>: &#123;</span><br><span class="line">            <span class="attr">"mib"</span>: <span class="string">"if_mib"</span>,</span><br><span class="line">            <span class="attr">"brand"</span>: <span class="string">"Huawei"</span>,</span><br><span class="line">            <span class="attr">"hostname"</span>: <span class="string">"GZ-RMZ-HW9306CSS"</span>,</span><br><span class="line">            <span class="attr">"model"</span>: <span class="string">"Quidway S9306"</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">"targets"</span>: [</span><br><span class="line">            <span class="string">"192.168.100.4"</span></span><br><span class="line">        ]</span><br><span class="line">    &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
-
-<p>之后 prometheus 会自动加载刚刚生成的服务发现配置文件，不需要重启 prometheus。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1776,7 +1761,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-count">17</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1789,7 +1774,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-count">20</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
